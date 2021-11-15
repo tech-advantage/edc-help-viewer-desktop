@@ -1,0 +1,23 @@
+{
+  "name": "edc-help-viewer-desktop",
+  "version": "0.1.0",
+  "description": "Viewer to navigate through the documentation exported by edc",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tech-advantage/edc-help-viewer-desktop.git"
+  },
+  "author": "TECH'advantage",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tech-advantage/edc-help-viewer-desktop/issues"
+  },
+  "homepage": "https://github.com/tech-advantage/edc-help-viewer-desktop#readme",
+  "devDependencies": {
+    "electron": "^15.3.1"
+  }
+}
