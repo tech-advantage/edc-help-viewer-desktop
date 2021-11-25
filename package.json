@@ -23,9 +23,9 @@
   },
   "dependencies": {
     "adm-zip": "^0.5.9",
+    "fs-extra": "^10.0.0",
     "request": "^2.88.2",
     "run-func": "^1.0.5",
-    "superagent": "^6.1.0",
-    "unzip": "^0.1.11"
+    "superagent": "^6.1.0"
   }
 }
