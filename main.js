@@ -29,5 +29,3 @@ app.whenReady().then(() => {
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') app.quit();
 })
-
-fs.rmSync(ROOT_FOLDER + "\\" + 'edc-help-viewer.3.2.2', { recursive: true, force: true }, console.error);

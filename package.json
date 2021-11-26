@@ -5,7 +5,7 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "init-viewer": "run-func init_help_viewer.js initViewer",
+    "init-viewer": "run-func ./src/utils/init_help_viewer.js initViewer",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
