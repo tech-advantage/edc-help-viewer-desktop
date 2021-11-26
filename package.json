@@ -5,6 +5,7 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
+    "build": "webpack --config webpack.config.js",
     "init-viewer": "run-func ./src/utils/init_help_viewer.js initViewer",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -19,13 +20,23 @@
   },
   "homepage": "https://github.com/tech-advantage/edc-help-viewer-desktop#readme",
   "devDependencies": {
-    "electron": "^15.3.1"
+    "babel-core": "^6.26.3",
+    "babel-loader": "^8.2.3",
+    "babel-preset-env": "^1.7.0",
+    "electron": "^15.3.1",
+    "uglify-js": "^3.14.3",
+    "webpack-merge": "^5.8.0"
   },
   "dependencies": {
     "adm-zip": "^0.5.9",
     "fs-extra": "^10.0.0",
+    "html-webpack-plugin": "^5.5.0",
+    "lodash": "^4.17.21",
+    "path-browserify": "^1.0.1",
     "request": "^2.88.2",
     "run-func": "^1.0.5",
-    "superagent": "^6.1.0"
+    "superagent": "^6.1.0",
+    "webpack": "^5.64.4",
+    "webpack-cli": "^4.9.1"
   }
 }
