@@ -10,7 +10,7 @@ const EDC_VIEWER_FOLDER = 'edc-help-viewer.3.2.2';
 const GIT_EDC_VIEWER_URL = `https://github.com/tech-advantage/${REPO_NAME}/releases/download/v3.2.2`;
 const source = `${GIT_EDC_VIEWER_URL}/${ZIP_FILE}`;
 const srcDir = `${ROOT_FOLDER}\\${EDC_VIEWER_FOLDER}\\help`;
-const destDir = `${ROOT_FOLDER}\\help`;
+const destDir = `C:\\help`;
 
 module.exports.initViewer = function () {
     request
