@@ -5,7 +5,8 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "build": "webpack --config webpack/webpack.config.js",
+    "clean-www" : "rimraf webpack/dist/help",
+    "build": "npm run clean-www && webpack --config webpack/webpack.config.js",
     "init-viewer": "run-func webpack/init_help_viewer.js initViewer",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -25,9 +26,9 @@
     "babel-preset-env": "^1.7.0",
     "copy-webpack-plugin": "^10.0.0",
     "electron": "^15.3.1",
+    "filemanager-webpack-plugin": "^6.1.7",
     "save-remote-file-webpack-plugin": "^1.1.0",
     "uglify-js": "^3.14.3",
-    "webpack-manifest-plugin": "^4.0.2",
     "webpack-merge": "^5.8.0",
     "webpack-nano": "^1.1.1",
     "webpack-shell-plugin-next": "^2.2.2"
@@ -39,6 +40,7 @@
     "lodash": "^4.17.21",
     "path-browserify": "^1.0.1",
     "request": "^2.88.2",
+    "rimraf": "^3.0.2",
     "run-func": "^1.0.5",
     "superagent": "^6.1.0",
     "webpack": "^5.64.4",
