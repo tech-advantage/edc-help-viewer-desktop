@@ -5,8 +5,8 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "build": "webpack --config webpack.config.js",
-    "init-viewer": "run-func ./src/utils/init_help_viewer.js initViewer",
+    "build": "webpack --config webpack/webpack.config.js",
+    "init-viewer": "run-func webpack/init_help_viewer.js initViewer",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -23,9 +23,14 @@
     "babel-core": "^6.26.3",
     "babel-loader": "^8.2.3",
     "babel-preset-env": "^1.7.0",
+    "copy-webpack-plugin": "^10.0.0",
     "electron": "^15.3.1",
+    "save-remote-file-webpack-plugin": "^1.1.0",
     "uglify-js": "^3.14.3",
-    "webpack-merge": "^5.8.0"
+    "webpack-manifest-plugin": "^4.0.2",
+    "webpack-merge": "^5.8.0",
+    "webpack-nano": "^1.1.1",
+    "webpack-shell-plugin-next": "^2.2.2"
   },
   "dependencies": {
     "adm-zip": "^0.5.9",
@@ -37,6 +42,7 @@
     "run-func": "^1.0.5",
     "superagent": "^6.1.0",
     "webpack": "^5.64.4",
-    "webpack-cli": "^4.9.1"
+    "webpack-cli": "^4.9.1",
+    "webpack-shell-plugin": "^0.3.5"
   }
 }
