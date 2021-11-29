@@ -1,31 +1,21 @@
-const {compiler, afterResolvers, hooks, tap} = require('webpack');
+const FileManagerPlugin = require('filemanager-webpack-plugin');
 const path = require('path');
-
-const { WebpackManifestPlugin } = require('webpack-manifest-plugin');
 const SaveRemoteFilePlugin = require('save-remote-file-webpack-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
 const WebpackShellPlugin = require('webpack-shell-plugin-next');
-// Create a new compiler instance
-
-const patterns = [
-  { from: process.cwd() + '/edc-help-viewer.3.2.2/help', to: 'help' },
-];
 
 const config = {
   entry: './main.js',
   output: {
     filename: 'main.js',
     path: path.resolve(__dirname, 'dist'),
-
   },
+  watch: true,
   resolve: {
-    extensions: [".js", ".jsx", ".json", ".ts", ".tsx"],// other stuff
+    extensions: [".js", ".jsx", ".json", ".ts", ".tsx"],
     fallback: {
       fs: false,
       path: require.resolve("path-browserify")
-    },
-    
-    
+    }
   },
   plugins: [
     new SaveRemoteFilePlugin([{
@@ -35,25 +25,21 @@ const config = {
     new WebpackShellPlugin({
       onBuildEnd:{
         scripts: ['npm run init-viewer'],
-        blocking: false,
-        parallel: true
+        blocking: true,
+        parallel: false
       },
-    }, new CopyWebpackPlugin({
-      patterns
-    })),
-    
-    {
-      apply: (compiler) => {
-        compiler.hooks.done.tap("WebpackShellPlugin", (compiler) => {
-          console.log('Je suis le done')   
-        })
-    },
-  },
+    }),
+    new FileManagerPlugin({
+      events: {
+        onEnd: {
+          move: [
+            { source: process.cwd() + '/edc-help-viewer.3.2.2/help', destination: process.cwd() + '/webpack/dist/help' },
+          ],
+          delete: [process.cwd() + '/edc-help-viewer.3.2.2', process.cwd() + '/webpack/dist/zip'],
+        },
+      },
+    }),
   ],
 };
-
-// if (patterns.length > 0) {
-//   config.plugins.push(new CopyWebpackPlugin({ patterns }));
-// }
 
 module.exports = config
