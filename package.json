@@ -2,13 +2,16 @@
   "name": "edc-help-viewer-desktop",
   "version": "0.1.0",
   "description": "Viewer to navigate through the documentation exported by edc",
-  "main": "main.js",
+  "main": "./src/main.js",
   "scripts": {
     "start": "electron .",
-    "clean-www" : "rimraf webpack/dist/help",
-    "build": "npm run clean-www && webpack --config webpack/webpack.config.js",
-    "init-viewer": "run-func webpack/init_help_viewer.js initViewer",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "clean": "rimraf ./static/help",
+    "dev": "NODE_ENV=dev webpack-dev-server --open",
+    "build": "npm run clean && webpack --config webpack/webpack.config.js",
+    "unzip-viewer": "run-func webpack/unzip_help_viewer.js initViewer",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
   },
   "repository": {
     "type": "git",
@@ -26,9 +29,12 @@
     "babel-preset-env": "^1.7.0",
     "copy-webpack-plugin": "^10.0.0",
     "electron": "^15.3.1",
+    "electron-builder": "^22.14.5",
+    "electron-packager": "^15.4.0",
     "filemanager-webpack-plugin": "^6.1.7",
     "save-remote-file-webpack-plugin": "^1.1.0",
     "uglify-js": "^3.14.3",
+    "webpack-dev-server": "^4.6.0",
     "webpack-merge": "^5.8.0",
     "webpack-nano": "^1.1.1",
     "webpack-shell-plugin-next": "^2.2.2"
@@ -39,6 +45,7 @@
     "html-webpack-plugin": "^5.5.0",
     "lodash": "^4.17.21",
     "path-browserify": "^1.0.1",
+    "replace-in-file-webpack-plugin": "^1.0.6",
     "request": "^2.88.2",
     "rimraf": "^3.0.2",
     "run-func": "^1.0.5",
