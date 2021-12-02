@@ -2,14 +2,17 @@ const FileManagerPlugin = require('filemanager-webpack-plugin');
 const path = require('path');
 const SaveRemoteFilePlugin = require('save-remote-file-webpack-plugin');
 const WebpackShellPlugin = require('webpack-shell-plugin-next');
+const ReplaceInFileWebpackPlugin = require('replace-in-file-webpack-plugin');
+
+const {ROOT_FOLDER, EDC_VIEWER_FOLDER_VERSION} = require('../conf/edc_const')
 
 const config = {
-  entry: './main.js',
+  entry: './src/main.js',
   output: {
     filename: 'main.js',
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(ROOT_FOLDER, 'dist'),
   },
-  watch: true,
+  
   resolve: {
     extensions: [".js", ".jsx", ".json", ".ts", ".tsx"],
     fallback: {
@@ -24,20 +27,32 @@ const config = {
     }]),
     new WebpackShellPlugin({
       onBuildEnd:{
-        scripts: ['npm run init-viewer'],
+        scripts: ['npm run unzip-viewer'],
         blocking: true,
         parallel: false
       },
     }),
+    new ReplaceInFileWebpackPlugin([{
+      dir: process.cwd() + '/static/help',
+      files: ['index.html'],
+      rules: [{
+          search: '/help/',
+          replace: './'
+      }]
+    }]),
     new FileManagerPlugin({
       events: {
         onEnd: {
           move: [
-            { source: process.cwd() + '/edc-help-viewer.3.2.2/help', destination: process.cwd() + '/webpack/dist/help' },
+            { source: process.cwd() + '/'+ EDC_VIEWER_FOLDER_VERSION +'/help', destination: ROOT_FOLDER + '/static/help' },
           ],
-          delete: [process.cwd() + '/edc-help-viewer.3.2.2', process.cwd() + '/webpack/dist/zip'],
+          copy: [
+            { source: process.cwd() + '/conf/config.json', destination: ROOT_FOLDER + '/static/help/assets/config.json'},
+          ],
+          delete: [process.cwd() + '/'+ EDC_VIEWER_FOLDER_VERSION + '', ROOT_FOLDER + '/dist/zip'],
         },
       },
+      runTasksInSeries: true,
     }),
   ],
 };

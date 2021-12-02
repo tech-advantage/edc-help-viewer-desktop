@@ -1,2 +1,8 @@
 **/node_modules
 **/help
+package.lock.json
+**/doc
+**/win-unpacked
+builder-debug.yml
+builder-effective-config.yaml
+**/dist

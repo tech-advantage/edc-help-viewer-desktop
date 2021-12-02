@@ -1,7 +1,7 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, globalShortcut } = require('electron');
 const path = require('path');
-const fs = require('fs');
-const ROOT_FOLDER = path.resolve(__dirname)
+const {ROOT_FOLDER} = require('../conf/edc_const')
+
 function createWindow () {
     const win = new BrowserWindow({
         width: 800,
@@ -10,11 +10,20 @@ function createWindow () {
             preload: path.join(__dirname, "/src/preload.js")
         }
     })
-
-    win.loadFile('index.html');
-
-    win.webContents.openDevTools();
  
+    const url = require('url').format({
+        protocol: 'file',
+        slashes: true,
+        pathname: '/static/help/index.html'
+    });
+    globalShortcut.register('CommandOrControl+I', () => { win.webContents.openDevTools() })
+    win.loadURL(url);
+
+    // Redirect to first webpage again
+    win.webContents.on('did-fail-load', () => {
+        console.log('did-fail-load');
+        win.loadURL(url);
+    });
 }
 
 app.whenReady().then(() => {
