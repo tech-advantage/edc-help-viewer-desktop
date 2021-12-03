@@ -13,7 +13,7 @@ function createWindow () {
     const viewerUrl = url.pathToFileURL('/static/help/index.html').href.replace("C:/", "");
     
     // Allow you to open devtools
-    globalShortcut.register('CommandOrControl+I', () => { win.webContents.openDevTools(); })
+    globalShortcut.register('CommandOrControl+I', () => { win.webContents.openDevTools(); });
     
     win.loadURL(viewerUrl);
 
@@ -31,10 +31,10 @@ app.whenReady().then(() => {
 
     app.on('activate', () => {
         if (BrowserWindow.getAllWindows().length === 0) createWindow();
-    })
-})
+    });
+});
 
 // Managing the closing of all windows
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') app.quit();
-})
+});
