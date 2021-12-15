@@ -1,28 +1,52 @@
 const { app, BrowserWindow, globalShortcut } = require('electron');
 const path = require('path');
-const {ROOT_FOLDER} = require('../conf/edc_const');
-const url = require('url');
+const rootPath = require('electron-root-path').rootPath;
+const log = require('electron-log');
+const {getLogTransportConsole, getLogTransportFile, getLogResolvePath} = require('./lib/logFormat')
+
 
 function createWindow () {
-    const win = new BrowserWindow({
+
+    getLogTransportConsole()
+    getLogTransportFile()
+    getLogResolvePath()
+
+    // Create main window
+    let mainWindow = new BrowserWindow({
         width: 800,
         height: 600,
-        icon: ROOT_FOLDER + '/static/help/assets/images/favicon.ico',
+        icon: getAppIcon()
     });
-
-    const viewerUrl = url.pathToFileURL('/static/help/index.html').href.replace("C:/", "");
     
     // Allow you to open devtools
-    globalShortcut.register('CommandOrControl+I', () => { win.webContents.openDevTools(); });
+    globalShortcut.register('CommandOrControl+I', () => { mainWindow.webContents.openDevTools(); });
     
-    win.loadURL(viewerUrl);
+    let viewerUrl = `file://${rootPath}/static/help/index.html`;
 
-    // Redirect to first webpage again
-    win.webContents.on('did-fail-load', () => {
-        console.log('did-fail-load');
-        win.loadURL(viewerUrl);
-    });
+    mainWindow.loadURL(viewerUrl).then(() => {log.info("index.html was loading succesfully")}).catch((error) => {log.error(error)})
+    
+    globalShortcut.register('f5', function() {
+		console.log('f5 is pressed')
+		mainWindow.reload()
+        mainWindow.loadURL(viewerUrl);
+	})
+    globalShortcut.register('CommandOrControl+R', function() {
+		console.log('CommandOrControl+R is pressed')
+		mainWindow.reload()
+        mainWindow.loadURL(viewerUrl);
+	})
 
+}
+
+function getAppIcon() {
+	switch (process.platform) {
+		case 'win32':
+			return path.join(rootPath, 'static', 'assets', 'building', 'win32', 'favicon.ico');
+		case 'linux':
+			return path.join(rootPath, 'static', 'assets', 'building', 'linux', 'favicon.png');
+		case 'darwin':
+			return path.join(rootPath, 'static', 'assets', 'building', 'darwin', 'favicon.png');
+	}
 }
 
 app.whenReady().then(() => {

@@ -4,14 +4,16 @@
   "description": "Viewer to navigate through the documentation exported by edc",
   "main": "./src/main.js",
   "scripts": {
+    "postinstall": "electron-builder install-app-deps",
     "start": "electron .",
     "clean": "rimraf ./static/help",
     "dev": "NODE_ENV=dev webpack-dev-server --open",
     "build": "npm run clean && webpack --config webpack/webpack.config.js",
-    "unzip-viewer": "run-func webpack/unzip_help_viewer.js initViewer",
+    "unzip-viewer": "run-func webpack/unzip_help_viewer.js unzipViewer",
     "test": "echo \"Error: no test specified\" && exit 1",
     "pack": "electron-builder --dir",
-    "dist": "electron-builder"
+    "dist": "electron-builder",
+    "build-win": "electron-packager ."
   },
   "repository": {
     "type": "git",
@@ -41,8 +43,8 @@
   },
   "dependencies": {
     "adm-zip": "^0.5.9",
-    "fs-extra": "^10.0.0",
-    "html-webpack-plugin": "^5.5.0",
+    "electron-log": "^4.4.1",
+    "electron-root-path": "^1.0.16",
     "lodash": "^4.17.21",
     "path-browserify": "^1.0.1",
     "replace-in-file-webpack-plugin": "^1.0.6",
@@ -56,8 +58,36 @@
     "webpack-shell-plugin": "^0.3.5"
   },
   "build": {
+    "appId": "fr.techad.edc-help-viewer-desktop",
+    "productName": "EDC help viewer",
     "win": {
-      "icon": "./static/help/assets/images/favicon.ico"
-    }
+      "target": [
+        "nsis"
+      ],
+      "icon": "static/assets/building/win32/favicon.ico"
+    },
+    "nsis": {
+      "installerIcon": "static/assets/building/win32/favicon.ico",
+      "uninstallerIcon": "static/assets/building/win32/favicon.ico",
+      "allowToChangeInstallationDirectory": true,
+      "oneClick": false,
+      "runAfterFinish": true
+    },
+    "extraResources": [
+      {
+        "from": "./static/",
+        "to": "../static",
+        "filter": [
+          "**/*"
+        ]
+      },
+      {
+        "from": "./static/assets/",
+        "to": "../assets",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ]
   }
 }
