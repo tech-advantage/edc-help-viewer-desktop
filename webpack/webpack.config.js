@@ -3,16 +3,21 @@ const path = require('path');
 const SaveRemoteFilePlugin = require('save-remote-file-webpack-plugin');
 const WebpackShellPlugin = require('webpack-shell-plugin-next');
 const ReplaceInFileWebpackPlugin = require('replace-in-file-webpack-plugin');
-
-const {ROOT_FOLDER, EDC_VIEWER_FOLDER_VERSION} = require('../conf/edc_const')
+const EDC_VIEWER_FOLDER_VERSION = 'edc-help-viewer.3.2.2';
+const {ROOT_FOLDER} = require('../conf/edc_const')
 
 const config = {
-  entry: './src/main.js',
+  entry: ROOT_FOLDER + '/src/main.js',
   output: {
     filename: 'main.js',
     path: path.resolve(ROOT_FOLDER, 'dist'),
   },
-  mode: 'production',
+  externals: {
+    'app': 'require("electron")',
+    'shell': 'require("shell")',
+    'fs': 'require("fs")',
+    'electron-log': 'require("electron-log")'
+  },
   resolve: {
     extensions: [".js", ".jsx", ".json", ".ts", ".tsx"],
     fallback: {
@@ -21,7 +26,7 @@ const config = {
     }
   },
   plugins: [
-    // Fetch the remote zip
+    // Fetch the remote zip viewer
     new SaveRemoteFilePlugin([{
       url: 'https://github.com/tech-advantage/edc-help-viewer/releases/download/v3.2.2/edc-help-viewer.3.2.2.zip',
       filepath: 'zip/edc_zip.zip',

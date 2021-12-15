@@ -6,4 +6,3 @@ package.lock.json
 builder-debug.yml
 builder-effective-config.yaml
 **/dist
-webpack/log/*
