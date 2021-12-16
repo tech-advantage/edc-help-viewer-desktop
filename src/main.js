@@ -7,6 +7,7 @@ const {getLogTransportConsole, getLogTransportFile, getLogResolvePath} = require
 
 function createWindow () {
 
+    // Method to format the writing of logs and configure path file
     getLogTransportConsole()
     getLogTransportFile()
     getLogResolvePath()
@@ -26,12 +27,10 @@ function createWindow () {
     mainWindow.loadURL(viewerUrl).then(() => {log.info("index.html was loading succesfully")}).catch((error) => {log.error(error)})
     
     globalShortcut.register('f5', function() {
-		console.log('f5 is pressed')
 		mainWindow.reload()
         mainWindow.loadURL(viewerUrl);
 	})
     globalShortcut.register('CommandOrControl+R', function() {
-		console.log('CommandOrControl+R is pressed')
 		mainWindow.reload()
         mainWindow.loadURL(viewerUrl);
 	})
