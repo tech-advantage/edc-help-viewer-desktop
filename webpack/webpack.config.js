@@ -8,6 +8,7 @@ const {ROOT_FOLDER} = require('../conf/edc_const')
 
 const config = {
   entry: ROOT_FOLDER + '/src/main.js',
+  mode: 'development',
   output: {
     filename: 'main.js',
     path: path.resolve(ROOT_FOLDER, 'dist'),

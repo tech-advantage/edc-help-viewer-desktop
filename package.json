@@ -24,6 +24,9 @@
   "bugs": {
     "url": "https://github.com/tech-advantage/edc-help-viewer-desktop/issues"
   },
+  "engines": {
+    "node": ">=14.18.0"
+  },
   "homepage": "https://github.com/tech-advantage/edc-help-viewer-desktop#readme",
   "devDependencies": {
     "babel-core": "^6.26.3",
