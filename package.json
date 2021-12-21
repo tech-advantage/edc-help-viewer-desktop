@@ -2,10 +2,18 @@
   "name": "edc-help-viewer-desktop",
   "version": "0.1.0",
   "description": "Viewer to navigate through the documentation exported by edc",
-  "main": "main.js",
+  "main": "./src/main.js",
   "scripts": {
+    "postinstall": "electron-builder install-app-deps",
     "start": "electron .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "clean": "rimraf ./static/help",
+    "dev": "NODE_ENV=dev webpack-dev-server --open",
+    "build": "npm run clean && webpack --config webpack/webpack.config.js",
+    "unzip-viewer": "run-func webpack/unzip_help_viewer.js unzipViewer",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "build-win": "electron-packager ."
   },
   "repository": {
     "type": "git",
@@ -16,8 +24,73 @@
   "bugs": {
     "url": "https://github.com/tech-advantage/edc-help-viewer-desktop/issues"
   },
+  "engines": {
+    "node": ">=14.18.0"
+  },
   "homepage": "https://github.com/tech-advantage/edc-help-viewer-desktop#readme",
   "devDependencies": {
-    "electron": "^15.3.1"
+    "babel-core": "^6.26.3",
+    "babel-loader": "^8.2.3",
+    "babel-preset-env": "^1.7.0",
+    "copy-webpack-plugin": "^10.0.0",
+    "electron": "^15.3.1",
+    "electron-builder": "^22.14.5",
+    "electron-packager": "^15.4.0",
+    "filemanager-webpack-plugin": "^6.1.7",
+    "save-remote-file-webpack-plugin": "^1.1.0",
+    "uglify-js": "^3.14.3",
+    "webpack-dev-server": "^4.6.0",
+    "webpack-merge": "^5.8.0",
+    "webpack-nano": "^1.1.1",
+    "webpack-shell-plugin-next": "^2.2.2"
+  },
+  "dependencies": {
+    "adm-zip": "^0.5.9",
+    "electron-log": "^4.4.1",
+    "electron-root-path": "^1.0.16",
+    "lodash": "^4.17.21",
+    "path-browserify": "^1.0.1",
+    "replace-in-file-webpack-plugin": "^1.0.6",
+    "request": "^2.88.2",
+    "rimraf": "^3.0.2",
+    "run-func": "^1.0.5",
+    "superagent": "^6.1.0",
+    "util": "^0.12.4",
+    "webpack": "^5.64.4",
+    "webpack-cli": "^4.9.1",
+    "webpack-shell-plugin": "^0.3.5"
+  },
+  "build": {
+    "appId": "fr.techad.edc-help-viewer-desktop",
+    "productName": "EDC help viewer",
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "static/assets/building/win32/favicon.ico"
+    },
+    "nsis": {
+      "installerIcon": "static/assets/building/win32/favicon.ico",
+      "uninstallerIcon": "static/assets/building/win32/favicon.ico",
+      "allowToChangeInstallationDirectory": true,
+      "oneClick": false,
+      "runAfterFinish": true
+    },
+    "extraResources": [
+      {
+        "from": "./static/",
+        "to": "../static",
+        "filter": [
+          "**/*"
+        ]
+      },
+      {
+        "from": "./static/assets/",
+        "to": "../assets",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ]
   }
 }
