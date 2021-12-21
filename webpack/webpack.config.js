@@ -3,7 +3,7 @@ const path = require('path');
 const SaveRemoteFilePlugin = require('save-remote-file-webpack-plugin');
 const WebpackShellPlugin = require('webpack-shell-plugin-next');
 const ReplaceInFileWebpackPlugin = require('replace-in-file-webpack-plugin');
-const EDC_VIEWER_FOLDER_VERSION = 'edc-help-viewer.3.2.2';
+const EDC_VIEWER_FOLDER_VERSION = 'edc-help-viewer.3.2.5';
 const {ROOT_FOLDER} = require('../conf/edc_const')
 
 const config = {
@@ -29,7 +29,7 @@ const config = {
   plugins: [
     // Fetch the remote zip viewer
     new SaveRemoteFilePlugin([{
-      url: 'https://github.com/tech-advantage/edc-help-viewer/releases/download/v3.2.2/edc-help-viewer.3.2.2.zip',
+      url: 'https://github.com/tech-advantage/edc-help-viewer/releases/download/v3.2.5/edc-help-viewer.3.2.5.zip',
       filepath: 'zip/edc_zip.zip',
     }]),
     // Run the unzip script describe in package.json
@@ -54,7 +54,7 @@ const config = {
       events: {
         onEnd: {
           move: [
-            { source: ROOT_FOLDER + '/'+ EDC_VIEWER_FOLDER_VERSION +'/help', destination: ROOT_FOLDER + '/static/help' },
+            { source: ROOT_FOLDER + '/dist', destination: ROOT_FOLDER + '/static/help' },
           ],
           copy: [
             { source: ROOT_FOLDER + '/conf/config.json', destination: ROOT_FOLDER + '/static/help/assets/config.json'},

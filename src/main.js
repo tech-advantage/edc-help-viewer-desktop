@@ -3,7 +3,7 @@ const path = require('path');
 const rootPath = require('electron-root-path').rootPath;
 const log = require('electron-log');
 const {getLogTransportConsole, getLogTransportFile, getLogResolvePath} = require('./lib/logFormat')
-
+const menuTemplate = require('./menu.js')
 
 function createWindow () {
 
@@ -18,7 +18,7 @@ function createWindow () {
         height: 600,
         icon: getAppIcon()
     });
-    
+
     // Allow you to open devtools
     globalShortcut.register('CommandOrControl+I', () => { mainWindow.webContents.openDevTools(); });
     
@@ -34,7 +34,6 @@ function createWindow () {
 		mainWindow.reload()
         mainWindow.loadURL(viewerUrl);
 	})
-
 }
 
 function getAppIcon() {
