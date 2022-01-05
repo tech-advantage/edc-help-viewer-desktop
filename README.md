@@ -32,7 +32,7 @@ For Windows operating system, your icon extension should be (.ico).
 
 #### Menu
 
-The application menu can be disabled in the configuration options of the config.json file by passing the "isEnableMenu" option to false.
+The application menu can be disabled in the configuration options of the config_electron_viewer.json file by passing the "isEnableMenu" option to false.
 
 ### Run
 

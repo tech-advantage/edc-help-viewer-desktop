@@ -13,6 +13,5 @@
   "useHttpdServer": false,
   "collapseTocAsDefault": true,
   "displayFirstDocInsteadOfToc": true,
-  "fullHeightRightSidebarOnMobile": true,
-  "isEnableMenu": true
+  "fullHeightRightSidebarOnMobile": true
 }

@@ -1,5 +1,5 @@
 const { Menu } = require("electron");
-const config = require("../conf/config.json")
+const config = require("../conf/config_electron_viewer.json")
 const isMac = process.platform === "darwin";
 const isEnabledMenu = config.isEnableMenu;
 
