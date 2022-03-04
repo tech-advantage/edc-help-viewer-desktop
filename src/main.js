@@ -2,36 +2,65 @@ const { app, BrowserWindow, globalShortcut } = require('electron');
 const path = require('path');
 const rootPath = require('electron-root-path').rootPath;
 const log = require('electron-log');
-const {getLogTransportConsole, getLogTransportFile, getLogResolvePath} = require('./lib/logFormat')
-const menuTemplate = require('./menu.js')
+const config = require("../conf/config_electron_viewer.json");
+const {getLogTransportConsole, getLogTransportFile, getLogResolvePath} = require('./lib/logFormat');
+const menuTemplate = require('./menu.js');
+const fetch = require('electron-main-fetch');
 
 function createWindow () {
 
     // Method to format the writing of logs and configure path file
-    getLogTransportConsole()
-    getLogTransportFile()
-    getLogResolvePath()
+    getLogTransportConsole();
+    getLogTransportFile();
+    getLogResolvePath();
 
     // Create main window
     let mainWindow = new BrowserWindow({
         width: 800,
         height: 600,
-        icon: getAppIcon()
+        icon: getAppIcon(),
+        webPreferences: {
+            nodeIntegration: true,
+            contextIsolation: false,
+        }
     });
 
+    let viewerUrl = `./public/index.html`;
+
+    mainWindow.loadFile(viewerUrl);
+
+    const loadURLInterval = setInterval(loadUrlFromServer, 5000);
+
+    function stopInterval(){
+        clearInterval(loadURLInterval);
+    }
+
+    function loadUrlFromServer(){
+        (async () => {
+            await fetch(`${config.protocol+config.hostname}:${config.server_port}/viewerurl`, {method: "GET"})
+            .then(response => response.json())
+            .then(data => {
+                if(data.url !== undefined){
+                    mainWindow.reload();
+                    mainWindow.loadURL(data.url);
+                    stopInterval();
+                }
+            })
+            .catch((e)=>{
+                console.log(e);
+            });
+        })();
+    }
+    
     // Allow you to open devtools
     globalShortcut.register('CommandOrControl+I', () => { mainWindow.webContents.openDevTools(); });
-    
-    let viewerUrl = `file://${rootPath}/static/help/index.html`;
-
-    mainWindow.loadURL(viewerUrl).then(() => {log.info("index.html was loading succesfully")}).catch((error) => {log.error(error)});
-    
+   
     globalShortcut.register('f5', function() {
-		mainWindow.reload()
+		mainWindow.reload();
         mainWindow.loadURL(viewerUrl);
 	})
     globalShortcut.register('CommandOrControl+R', function() {
-		mainWindow.reload()
+		mainWindow.reload();
         mainWindow.loadURL(viewerUrl);
 	})
 }
