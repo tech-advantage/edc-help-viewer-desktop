@@ -1,5 +1,5 @@
 {
-  "docPath": "../doc",
+  "docPath": "http://localhost:60000/doc",
   "documentationStylePath": "./assets/style/custom.css",
   "themeStylePath": "./assets/style/theme.css",
   "images": {
@@ -13,6 +13,5 @@
   "useHttpdServer": false,
   "collapseTocAsDefault": true,
   "displayFirstDocInsteadOfToc": true,
-  "fullHeightRightSidebarOnMobile": true,
-  "isEnableMenu": true
+  "fullHeightRightSidebarOnMobile": true
 }

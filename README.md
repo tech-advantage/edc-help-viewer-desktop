@@ -30,9 +30,11 @@ For Windows operating system, your icon extension should be (.ico).
 * For Windows to win32 folder, icon size should be at least 256x256.
 * For Linux to linux folder, recommended sizes: 16, 32, 48, 64, 128, 256 (or just 512).
 
+To change the default image with your own image, go to the config_electron_viewer.json file by passing the "img_default" option to false and then add your own image to the public/img folder.
+
 #### Menu
 
-The application menu can be disabled in the configuration options of the config.json file by passing the "isEnableMenu" option to false.
+The application menu can be disabled in the configuration options of the config_electron_viewer.json file by passing the "isEnableMenu" option to false.
 
 ### Run
 
@@ -48,7 +50,11 @@ Launch packaging of application with :
 
 Launch distribution of application with :
 
-    npm run dist
+###### Windows
+    npm run dist:windows
+
+###### Linux
+    npm run dist:linux
 
 ## License
 MIT [TECH'advantage](mailto:contact@tech-advantage.com)

@@ -2,12 +2,11 @@ const FileManagerPlugin = require('filemanager-webpack-plugin');
 const path = require('path');
 const SaveRemoteFilePlugin = require('save-remote-file-webpack-plugin');
 const WebpackShellPlugin = require('webpack-shell-plugin-next');
-const ReplaceInFileWebpackPlugin = require('replace-in-file-webpack-plugin');
 const EDC_VIEWER_FOLDER_VERSION = 'edc-help-viewer.3.2.5';
 const {ROOT_FOLDER} = require('../conf/edc_const')
 
 const config = {
-  entry: ROOT_FOLDER + '/src/main.js',
+  entry: ROOT_FOLDER + '/main.js',
   mode: 'development',
   output: {
     filename: 'main.js',
@@ -40,15 +39,6 @@ const config = {
         parallel: false
       },
     }),
-    // Replace the url base in index.html from viewer
-    new ReplaceInFileWebpackPlugin([{
-      dir: ROOT_FOLDER + '/static/help',
-      files: ['index.html'],
-      rules: [{
-          search: '/help/',
-          replace: './'
-      }]
-    }]),
     // Move, copy and delete content from viewer directory unzipped, thats actions fire after build completes
     new FileManagerPlugin({
       events: {
@@ -58,6 +48,7 @@ const config = {
           ],
           copy: [
             { source: ROOT_FOLDER + '/conf/config.json', destination: ROOT_FOLDER + '/static/help/assets/config.json'},
+            { source: ROOT_FOLDER + '/conf/index.html', destination: ROOT_FOLDER + '/static/help/'},
           ],
           delete: [ROOT_FOLDER + '/'+ EDC_VIEWER_FOLDER_VERSION + '', ROOT_FOLDER + '/dist/zip'],
         },
