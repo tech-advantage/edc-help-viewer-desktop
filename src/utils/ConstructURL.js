@@ -32,7 +32,7 @@ class ConstructURL {
      * @returns {string}
      */
     static getHostName() {
-        if (this.isEmpty(configViewer.hostname)){
+        if(this.isEmpty(configViewer.hostname)){
             return 'localhost';
         }
         return configViewer.hostname;
@@ -44,11 +44,11 @@ class ConstructURL {
      * @returns {number}
      */
     static getServerPort() {
-        if(!configViewer.server_port){
+        if(!configViewer.server_port)
             return 60000;
-        }else if(typeof configViewer.server_port === 'string'){
+        if(typeof configViewer.server_port === 'string')
             return parseInt(configViewer.server_port);
-        }
+        
         return configViewer.server_port;
     }
 

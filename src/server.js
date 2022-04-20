@@ -18,8 +18,7 @@ window.addEventListener('DOMContentLoaded', () => {
     getLogTransportFile();
     getLogResolvePath();
 
-
-    console.log('Server started');
+    log.info('Server started');
 
     app
     .use(cors())
@@ -48,7 +47,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
         ipc.send('requested-url', req.body.url);
 
-        log.info(`POST request body ${JSON.stringify({url: req.body.url})} was sending succesfully`);
+        log.debug(`POST request body ${JSON.stringify({url: req.body.url})} was sending succesfully`);
         res.send(`POST request body ${JSON.stringify({url: req.body.url})} was sending succesfully`);
     })
 

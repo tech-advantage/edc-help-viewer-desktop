@@ -4,7 +4,6 @@ const rootPath = require('electron-root-path').rootPath;
 const log = require('electron-log');
 require('./src/menu.js');
 const {getLogTransportConsole, getLogTransportFile, getLogResolvePath} = require('./src/lib/logFormat');
-const ipc = ipcMain;
 const ConstructURL = require('./src/utils/ConstructURL');
 
 function createWindow () {
@@ -25,10 +24,6 @@ function createWindow () {
         }
     });
 
-    // Allow you to open devtools
-    globalShortcut.register('CommandOrControl+I', () => { mainWindow.webContents.openDevTools(); });
-
-    // if is dev mode passe argument to true
     mainWindow.loadURL(`${ConstructURL.getStaticFileLoaderPath()}`)
     .then(() => {
         log.info('index.html was loaded successfully');  
@@ -42,7 +37,7 @@ function createWindow () {
     .catch(err => log.error(err));
 
     // Receive request from server
-    ipc.on('requested-url', (e, url) => {
+    ipcMain.on('requested-url', (e, url) => {
         mainWindow.loadURL(url);
         if(mainWindow.isMinimized()){
             mainWindow.focus()
