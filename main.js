@@ -26,7 +26,7 @@ function createWindow () {
 
     mainWindow.loadURL(`${ConstructURL.getStaticFileLoaderPath()}`)
     .then(() => {
-        log.info('index.html was loaded successfully');  
+        log.info('index.html was loaded successfully');
         mainWindow.loadURL(`${ConstructURL.getHelpViewerHomePath()}`)
         .then(() => {
             log.info('Home page viewer was loaded successfully')

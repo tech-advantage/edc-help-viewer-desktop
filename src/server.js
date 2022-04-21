@@ -24,8 +24,6 @@ window.addEventListener('DOMContentLoaded', () => {
     .use(cors())
     .use(bodyParser.json())
     .use(express.static(path.join(__dirname, '../static')))
-    .use(express.static(path.join(__dirname, '../static/help/assets/style')))
-    .use(express.static(path.join(__dirname, '../static/help/assets')));
 
     const urlSchema = {
         type: 'object',
