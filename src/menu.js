@@ -1,12 +1,12 @@
-const { Menu } = require("electron");
-const config = require("../conf/config.json")
-const isMac = process.platform === "darwin";
+const { Menu } = require('electron');
+const config = require('../conf/config_electron_viewer.json');
+const isMac = process.platform === 'darwin';
 const isEnabledMenu = config.isEnableMenu;
 
 const template = [
   {
-    label: "File",
-    submenu: [isMac ? { role: "close" } : { role: "quit" }],
+    label: 'File',
+    submenu: [isMac ? { role: 'close' } : { role: 'quit' }],
   },
   {
     label: 'Edit',

@@ -1,7 +1,7 @@
 {
-  "docPath": "../doc",
-  "documentationStylePath": "./assets/style/custom.css",
-  "themeStylePath": "./assets/style/theme.css",
+  "docPath": "http://localhost:60000/doc",
+  "documentationStylePath": "http://localhost:60000/help/assets/style/custom.css",
+  "themeStylePath": "http://localhost:60000/help/assets/style/theme.css",
   "images": {
     "favicon": "assets/images/favicon.ico",
     "logo_header": "assets/images/logo_edc_header.png",
@@ -13,6 +13,5 @@
   "useHttpdServer": false,
   "collapseTocAsDefault": true,
   "displayFirstDocInsteadOfToc": true,
-  "fullHeightRightSidebarOnMobile": true,
-  "isEnableMenu": true
+  "fullHeightRightSidebarOnMobile": true
 }
