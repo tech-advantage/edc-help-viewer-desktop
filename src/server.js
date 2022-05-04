@@ -25,6 +25,7 @@ window.addEventListener('DOMContentLoaded', () => {
     .use(bodyParser.json())
     .use(express.static(path.join(__dirname, '../static')))
 
+
     const urlSchema = {
         type: 'object',
         required: ['url'],
@@ -38,9 +39,13 @@ window.addEventListener('DOMContentLoaded', () => {
     app.post('/viewerurl', validate({body: urlSchema}),(req, res) => {
         res.setHeader('Content-Type', 'application/json');
 
+
         if(res.status === 500){
             log.error(req, res);
             res.send('Internal Server Error');
+        } else if(res.status === 404){
+            const message = 'Unable to find the requested resource ! You can try another URL.';
+            res.status(404).json({message});
         }
 
         ipc.send('requested-url', req.body.url);
@@ -50,8 +55,8 @@ window.addEventListener('DOMContentLoaded', () => {
     })
 
     app.use(({res}) => {
-        const message = 'Unable to find the requested resource ! You can try another URL.';
-        res.status(404).json({message});
+        const message = 'Chargement ...';
+        res.send(message);
     })
 
     var server = app.listen(ConstructURL.getServerPort(), () => {
