@@ -4,6 +4,7 @@ const fs = require('fs');
 const lunr = require('lunr');
 const htmlFormatter = require('../HtmlFormatter');
 
+
 class ContentIndexer{
     static docBasePath = '../../../static/doc';
     static multiDocItems = {};
@@ -35,7 +36,6 @@ class ContentIndexer{
 
         for(let toc of allTocsFiles){
             ContentIndexer.indexTocReference(productFolder, toc);
-            
         }
     }
 
@@ -62,11 +62,10 @@ class ContentIndexer{
                 url: toc.url,
                 content: htmlFormatter.removeTags(htmlFormatter.splitHtml(toc))
             }
-            ContentIndexer.documents.push(topicObject);
             
+            ContentIndexer.documents.push(topicObject);
             existingChildren.push(toc.topics);
-
-          toc.topics && ContentIndexer.getContentOfTopicsNodes(toc.topics, existingChildren, strategyId, strategyLabel, languageCode);
+            toc.topics && ContentIndexer.getContentOfTopicsNodes(toc.topics, existingChildren, strategyId, strategyLabel, languageCode);
         });
         
         return existingChildren;
@@ -75,7 +74,7 @@ class ContentIndexer{
     /**
      * Set the content of topics nodes
      * 
-     * @param {*} productFolder 
+     * @param {*} productFolder
      * @param {*} tocReference 
      */
     static indexTocReference(productFolder, tocReference){
@@ -105,7 +104,7 @@ class ContentIndexer{
      */
     static createIndex(){
 
-        let pagesIndex; 
+        let pagesIndex;
         pagesIndex = ContentIndexer.documents;
          
         let lunrIndex = lunr(function () {

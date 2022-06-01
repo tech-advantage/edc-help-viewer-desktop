@@ -5,7 +5,6 @@ const lunr = require('lunr');
 const ContentIndexer = require('./ContentIndexer');
 
 class SearchHandler {
-
     static homePath = path.join(homedir, '/edc_help_viewer/index/lunr.json');
 
     /**

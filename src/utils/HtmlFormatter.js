@@ -22,7 +22,7 @@ class HtmlFormatter {
     /**
      * Remove all html tags
      * 
-     * @param {*} str 
+     * @param {*} str
      * @returns
      */
     static removeTags(str){

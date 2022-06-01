@@ -28,6 +28,9 @@ window.addEventListener('DOMContentLoaded', () => {
     .use(express.static(path.join(__dirname, '../static')));
 
     ContentIndexer.tocIndexer();
+
+    log.debug("Product ID = [" + ContentIndexer.getMultiDocContent().productId + "]; Plugin ID = [" + ContentIndexer.getMultiDocContent().pluginId + "];")
+ 
     ContentIndexer.createIndex();
     
     const urlSchema = {
