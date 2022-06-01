@@ -23,7 +23,7 @@ class SearchHandler {
         let result;
 
         query = exactMatch == "false" ? query = query += "*" : query;
-
+        
         return idx.search(query).flatMap((hit) => {
             if (hit.ref == "undefined") return [];
             let pageMatch = ContentIndexer.documents.filter((page) => page.id === hit.ref);

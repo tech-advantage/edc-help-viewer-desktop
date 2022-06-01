@@ -1,8 +1,8 @@
-const homedir = require('os').homedir();
+const homeDirectory = require('os').homedir();
 const path = require('path');
 const fs = require('fs');
 const lunr = require('lunr');
-const HtmlFormatter = require('../HtmlFormatter');
+const htmlFormatter = require('../HtmlFormatter');
 
 class ContentIndexer{
     static docBasePath = '../../../static/doc';
@@ -35,9 +35,49 @@ class ContentIndexer{
 
         for(let toc of allTocsFiles){
             ContentIndexer.indexTocReference(productFolder, toc);
+            
         }
     }
 
+    /**
+     * Get the nested content of topics nodes
+     * 
+     * @param {*} arr
+     * @param {*} existingChildren 
+     * @param {*} strategyId 
+     * @param {*} strategyLabel
+     * @param {*} languageCode
+     * @returns topics content
+     */
+    static getContentOfTopicsNodes(arr, existingChildren, strategyId, strategyLabel, languageCode) {
+        arr.forEach(toc => {
+            let topicObject = {
+                id: toc.id,
+                label: toc.label,
+                url: toc.url,
+                strategyId: strategyId,
+                strategyLabel: strategyLabel,
+                type: toc.type,
+                languageCode: languageCode,
+                url: toc.url,
+                content: htmlFormatter.removeTags(htmlFormatter.splitHtml(toc))
+            }
+            ContentIndexer.documents.push(topicObject);
+            
+            existingChildren.push(toc.topics);
+
+          toc.topics && ContentIndexer.getContentOfTopicsNodes(toc.topics, existingChildren, strategyId, strategyLabel, languageCode);
+        });
+        
+        return existingChildren;
+    }
+
+    /**
+     * Set the content of topics nodes
+     * 
+     * @param {*} productFolder 
+     * @param {*} tocReference 
+     */
     static indexTocReference(productFolder, tocReference){
         let tocXjsonFile = productFolder + "\\" + tocReference.file;
         
@@ -54,49 +94,10 @@ class ContentIndexer{
                     languageCode = key;
                     fieldValue = tocJsonFile[key];
                     strategyLabel = fieldValue.label;
-                    
-                    ContentIndexer.indexTopic(strategyId, languageCode, strategyLabel, fieldValue.topics);
-
-                    for(let data of fieldValue.topics){
-                        if(data.topics.length > 0){
-                            for(let topic of data.topics){
-                                let topicObject = {
-                                    id: topic.id, 
-                                    label: topic.label,
-                                    url: topic.url,
-                                    strategyId: strategyId,
-                                    strategyLabel: strategyLabel,
-                                    type: topic.type,
-                                    languageCode: languageCode,
-                                    url: topic.url,
-                                    content: HtmlFormatter.removeTags(HtmlFormatter.splitHtml(topic))
-                                }
-                                ContentIndexer.documents.push(topicObject);
-                            }
-                        }  
-                    }
+                    ContentIndexer.getContentOfTopicsNodes(fieldValue.topics, [], strategyId, strategyLabel, languageCode)
                 }
             });
         }
-    }
-
-
-    static indexTopic(strategyId, languageCode, strategyLabel, topicNode){
-        let topicObj;
-
-        for(let topic of topicNode){
-            topicObj = {
-                id: topic.id,
-                strategyId: strategyId,
-                languageCode: languageCode,
-                type: topic.type,
-                strategyLabel: strategyLabel,
-                label: topic.label,
-                content: HtmlFormatter.removeTags(HtmlFormatter.splitHtml(topic)),
-                url: topic.url
-            }
-        }
-        ContentIndexer.documents.push(topicObj);
     }
 
     /**
@@ -121,8 +122,7 @@ class ContentIndexer{
         });
           
         const indexedContent = JSON.stringify(lunrIndex, null, 4);
-         
-        fs.writeFileSync(homedir + '/edc_help_viewer/index/lunr.json', indexedContent);
+        fs.writeFileSync(homeDirectory + '/edc_help_viewer/index/lunr.json', indexedContent);
     }
       
 }
