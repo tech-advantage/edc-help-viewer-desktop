@@ -11,11 +11,11 @@
     "clean": "rimraf ./static/help",
     "build": "npm run clean && webpack --config webpack/webpack.config.js",
     "unzip-viewer": "run-func webpack/unzip_help_viewer.js unzipViewer",
-    "test": "echo \"Error: no test specified\" && exit 1",
     "pack": "electron-builder --dir",
     "dist:windows": "electron-builder --windows",
     "dist:linux": "electron-builder --linux",
-    "build-win": "electron-packager ."
+    "build-win": "electron-packager .",
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -36,7 +36,10 @@
     "electron-builder": "^22.14.5",
     "electron-packager": "^15.4.0",
     "filemanager-webpack-plugin": "^6.1.7",
+    "jest": "^28.1.1",
+    "nodemon": "^2.0.16",
     "save-remote-file-webpack-plugin": "^1.1.0",
+    "supertest": "^6.2.3",
     "webpack-merge": "^5.8.0",
     "webpack-nano": "^1.1.1",
     "webpack-shell-plugin-next": "^2.2.2"
@@ -50,7 +53,6 @@
     "express": "^4.17.3",
     "express-json-validator-middleware": "^2.2.1",
     "lunr": "^2.3.9",
-    "nodemon": "^2.0.16",
     "path-browserify": "^1.0.1",
     "replace-in-file-webpack-plugin": "^1.0.6",
     "rimraf": "^3.0.2",
