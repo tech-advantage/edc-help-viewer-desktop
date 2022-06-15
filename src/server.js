@@ -14,91 +14,92 @@ const SearchHandler = require('./utils/lunr/SearchHandler');
 const { validate } = new Validator();
 let message = 'Loading ...';
 
-window.addEventListener('DOMContentLoaded', () => {
-    // Method to format the writings logs
-    getLogTransportConsole();
-    getLogTransportFile();
-    getLogResolvePath();
+
+// Method to format the writings logs
+getLogTransportConsole();
+getLogTransportFile();
+getLogResolvePath();
+
+log.info('Server started');
+
+app
+.use(cors())
+.use(bodyParser.json())
+.use(express.static(path.join(__dirname, '../static')));
+
+ContentIndexer.tocIndexer();
+
+log.debug("Product ID = [" + ContentIndexer.getMultiDocContent().productId + "]; Plugin ID = [" + ContentIndexer.getMultiDocContent().pluginId + "];")
+
+ContentIndexer.createIndex();
+
+const urlSchema = {
+    type: 'object',
+    required: ['url'],
+    properties: {
+        url: {
+            type: 'string',
+        }
+    },
+};
+
+app.post('/viewerurl', validate({body: urlSchema}),(req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+
+    if(res.status === 500){
+        log.error(req, res);
+        res.send('Internal Server Error');
+    } else if(res.status === 404){
+        const message = 'Unable to find the requested resource ! You can try another URL.';
+        res.status(404).json({message});
+    }
     
-    log.info('Server started');
+    let splitUrl = req.body.url.split('/');
+    let languageCode = splitUrl[splitUrl.length -1];
 
-    app
-    .use(cors())
-    .use(bodyParser.json())
-    .use(express.static(path.join(__dirname, '../static')));
+    if(languageCode == "fr"){
+        message = 'Chargement ...';
+    }
 
-    ContentIndexer.tocIndexer();
+    res.status(200).json(`POST request body ${JSON.stringify({url: req.body.url})} was sending succesfully`);
+    log.debug(`POST request body ${JSON.stringify({url: req.body.url})} was sending succesfully`);
 
-    log.debug("Product ID = [" + ContentIndexer.getMultiDocContent().productId + "]; Plugin ID = [" + ContentIndexer.getMultiDocContent().pluginId + "];")
- 
-    ContentIndexer.createIndex();
+    ipc.send('requested-url', req.body.url);
+});
+
+app.get('/httpd/api/search', (req, res) => {
+    let query = req.query['query'];
+    let exactMatch = req.query['exact-match'];
+    let lang = req.query['lang'];
+    let limit = parseInt(req.query['limit']);
+
+    res.setHeader('Content-Type', 'application/json');
+    if(res.status === 500){
+        log.error(req, res);
+        res.send('Internal Server Error');
+    } else if(res.status === 404){
+        const message = 'Unable to find the requested resource ! You can try another URL.';
+        res.status(404).json({message});
+    }
     
-    const urlSchema = {
-        type: 'object',
-        required: ['url'],
-        properties: {
-            url: {
-                type: 'string',
-            }
-        },
-    };
+    let getSearchResults = SearchHandler.getSearchResults(query, exactMatch, lang ? lang : "en");
+    
+    if(limit && limit > 0){
+        getSearchResults = getSearchResults.slice(Math.max(getSearchResults.length - limit, 0));
+    }
 
-    app.post('/viewerurl', validate({body: urlSchema}),(req, res) => {
-        res.setHeader('Content-Type', 'application/json');
+    log.debug("Query parameters: Query=["+ query +"], exactMatch=["+ exactMatch +"], lang=["+ lang +"], limit=["+ limit +"]");
+    log.debug("Result length = " + getSearchResults.length);
+    
+    res.json(getSearchResults);
+});
 
-        if(res.status === 500){
-            log.error(req, res);
-            res.send('Internal Server Error');
-        } else if(res.status === 404){
-            const message = 'Unable to find the requested resource ! You can try another URL.';
-            res.status(404).json({message});
-        }
+app.use(({res}) => {
+    res.send(message);
+});
 
-        ipc.send('requested-url', req.body.url);
+var server = app.listen(ConstructURL.getServerPort(), () => {
+    log.info(`Server listening on port : ${ConstructURL.getServerPort()}`);
+});
 
-        let splitUrl = req.body.url.split('/');
-        let languageCode = splitUrl[splitUrl.length -1];
-
-        if(languageCode == "fr"){
-            message = 'Chargement ...';
-        }
-
-        log.debug(`POST request body ${JSON.stringify({url: req.body.url})} was sending succesfully`);
-        res.send(`POST request body ${JSON.stringify({url: req.body.url})} was sending succesfully`);
-    });
-
-    app.get('/httpd/api/search', (req, res) => {
-        let query = req.query['query'];
-        let exactMatch = req.query['exact-match'];
-        let lang = req.query['lang'];
-        let limit = parseInt(req.query['limit']);
-
-        res.setHeader('Content-Type', 'application/json');
-        if(res.status === 500){
-            log.error(req, res);
-            res.send('Internal Server Error');
-        } else if(res.status === 404){
-            const message = 'Unable to find the requested resource ! You can try another URL.';
-            res.status(404).json({message});
-        }
-        
-        let getSearchResults = SearchHandler.getSearchResults(query, exactMatch, lang ? lang : "en");
-        
-        if(limit && limit > 0){
-            getSearchResults = getSearchResults.slice(Math.max(getSearchResults.length - limit, 0));
-        }
-
-        log.debug("Query parameters: Query=["+ query +"], exactMatch=["+ exactMatch +"], lang=["+ lang +"], limit=["+ limit +"]");
-        log.debug("Result length = " + getSearchResults.length);
-
-        res.json(getSearchResults);
-    });
-
-    app.use(({res}) => {
-        res.send(message);
-    });
-
-    var server = app.listen(ConstructURL.getServerPort(), () => {
-        log.info(`Server listening on port : ${ConstructURL.getServerPort()}`);
-    });
-})
+module.exports = server
