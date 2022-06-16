@@ -1,4 +1,3 @@
-require('./src/server.js');
 const configViewer = require('./conf/config_electron_viewer.json');
 const path = require('path');
 var fs = require('fs');
