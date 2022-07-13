@@ -44,6 +44,7 @@ window.addEventListener('DOMContentLoaded', () => {
       var head = document.getElementsByTagName('head')[0];
       let cssFiles = fs.readdirSync(path.join(__dirname, './static/help/assets/style'))
       let urlConfig = `${configViewer.protocol}://${configViewer.hostname}:${configViewer.server_port}`;
+
       for(let file of cssFiles){
         var link  = document.createElement('link');
         link.rel  = 'stylesheet';

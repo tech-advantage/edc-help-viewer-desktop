@@ -28,6 +28,7 @@ app
 
 ContentIndexer.tocIndexer();
 
+
 log.debug("Product ID = [" + ContentIndexer.getMultiDocContent().productId + "]; Plugin ID = [" + ContentIndexer.getMultiDocContent().pluginId + "];")
 
 ContentIndexer.createIndex();
@@ -94,10 +95,10 @@ app.get('/httpd/api/search', (req, res) => {
 });
 
 app.use(({res}) => {
+    const message = 'Chargement ...';
     res.send(message);
 });
 
 var server = app.listen(ConstructURL.getServerPort(), () => {
     log.info(`Server listening on port : ${ConstructURL.getServerPort()}`);
 });
-
