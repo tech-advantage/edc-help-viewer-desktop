@@ -90,7 +90,7 @@ app.get('/httpd/api/search', (req, res) => {
     log.debug("Query parameters: Query=["+ query +"], exactMatch=["+ exactMatch +"], lang=["+ lang +"], limit=["+ limit +"]");
     log.debug("Result length = " + getSearchResults.length);
 
-    res.json(getSearchResults);
+    res.status(200).json(getSearchResults);
 });
 
 app.use(({res}) => {
