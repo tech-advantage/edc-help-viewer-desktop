@@ -6,7 +6,7 @@ require('./src/menu.js');
 const {getLogTransportConsole, getLogTransportFile, getLogResolvePath} = require('./src/lib/logFormat');
 const ConstructURL = require('./src/utils/ConstructURL');
 
-function createWindow () {
+function createWindow(){
     // Method to format the writings logs
     getLogTransportConsole();
     getLogTransportFile();
@@ -18,12 +18,13 @@ function createWindow () {
         height: 600,
         icon: getAppIcon(),
         webPreferences: {
-            nodeIntegration: true,
-            contextIsolation: false,
+            nodeIntegration: false,
+            contextIsolation: true,
             preload: path.join(__dirname, './preload.js')
         }
     });
-
+    mainWindow.maximize()
+    mainWindow.webContents.openDevTools();
     mainWindow.loadURL(`${ConstructURL.getStaticFileLoaderPath()}`)
     .then(() => {
         log.info('index.html was loaded successfully');
@@ -55,8 +56,8 @@ function createWindow () {
     })
 }
 
-function getAppIcon() {
-	switch (process.platform) {
+function getAppIcon(){
+	switch (process.platform){
 		case 'win32':
 			return path.join(rootPath, 'static', 'assets', 'building', 'win32', 'favicon.ico');
 		case 'linux':

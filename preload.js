@@ -1,10 +1,10 @@
-require('./src/server.js');
+
 const configViewer = require('./conf/config_electron_viewer.json');
 const path = require('path');
 var fs = require('fs');
 
 window.addEventListener('DOMContentLoaded', () => {
-
+  require('./src/server.js');
   let imgContent = document.querySelector('.img-content');
   let imgViewer = document.querySelector('.img-content img');
 

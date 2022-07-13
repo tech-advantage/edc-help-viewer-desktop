@@ -9,57 +9,100 @@ const app = express();
 
 const {getLogTransportConsole, getLogTransportFile, getLogResolvePath} = require('./lib/logFormat');
 const ConstructURL = require('./utils/ConstructURL');
+const ContentIndexer = require('./utils/lunr/ContentIndexer');
+const SearchHandler = require('./utils/lunr/SearchHandler');
 const { validate } = new Validator();
+let message = 'Loading ...';
 
 
-window.addEventListener('DOMContentLoaded', () => {
-    // Method to format the writings logs
-    getLogTransportConsole();
-    getLogTransportFile();
-    getLogResolvePath();
+// Method to format the writings logs
+getLogTransportConsole();
+getLogTransportFile();
+getLogResolvePath();
 
-    log.info('Server started');
+log.info('Server started');
 
-    app
-    .use(cors())
-    .use(bodyParser.json())
-    .use(express.static(path.join(__dirname, '../static')))
+app
+.use(cors())
+.use(bodyParser.json())
+.use(express.static(path.join(__dirname, '../static')));
 
 
-    const urlSchema = {
-        type: 'object',
-        required: ['url'],
-        properties: {
-            url: {
-                type: 'string',
-            }
-        },
+ContentIndexer.tocIndexer();
+
+log.debug("Product ID = [" + ContentIndexer.getMultiDocContent().productId + "]; Plugin ID = [" + ContentIndexer.getMultiDocContent().pluginId + "];")
+
+ContentIndexer.createIndex();
+
+const urlSchema = {
+    type: 'object',
+    required: ['url'],
+    properties: {
+      url: {
+        type: 'string',
+      }
+  },
+}
+
+app.post('/viewerurl', validate({body: urlSchema}),(req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+
+    if(res.status === 500){
+        log.error(req, res);
+        res.send('Internal Server Error');
+    } else if(res.status === 404){
+        const message = 'Unable to find the requested resource ! You can try another URL.';
+        res.status(404).json({message});
+    }
+    
+    ipc.send('requested-url', req.body.url);
+    
+    let splitUrl = req.body.url.split('/');
+    let languageCode = splitUrl[splitUrl.length -1];
+
+    if(languageCode == "fr"){
+        message = 'Chargement ...';
     }
 
-    app.post('/viewerurl', validate({body: urlSchema}),(req, res) => {
-        res.setHeader('Content-Type', 'application/json');
+    res.status(200).json(`POST request body ${JSON.stringify({url: req.body.url})} was sending succesfully`);
+    log.debug(`POST request body ${JSON.stringify({url: req.body.url})} was sending succesfully`);
+   
+});
 
+app.get('/httpd/api/search', (req, res) => {
+    let query = req.query['query'];
+    let exactMatch = req.query['exact-match'];
+    let lang = req.query['lang'];
+    let limit = parseInt(req.query['limit']);
 
-        if(res.status === 500){
-            log.error(req, res);
-            res.send('Internal Server Error');
-        } else if(res.status === 404){
-            const message = 'Unable to find the requested resource ! You can try another URL.';
-            res.status(404).json({message});
-        }
+    res.setHeader('Content-Type', 'application/json');
+    if(res.status === 500){
+        log.error(req, res);
+        res.send('Internal Server Error');
+    } else if(res.status === 404){
+        const message = 'Unable to find the requested resource ! You can try another URL.';
+        res.status(404).json({message});
+    }
+    
+    let getSearchResults = SearchHandler.getSearchResults(query, exactMatch, lang ? lang : "en");
+    
+    if(limit && limit > 0){
+        getSearchResults = getSearchResults.slice(Math.max(getSearchResults.length - limit, 0));
+    }
 
-        ipc.send('requested-url', req.body.url);
+    log.debug("Query parameters: Query=["+ query +"], exactMatch=["+ exactMatch +"], lang=["+ lang +"], limit=["+ limit +"]");
+    log.debug("Result length = " + getSearchResults.length);
+    
+    res.json(getSearchResults);
+});
 
-        log.debug(`POST request body ${JSON.stringify({url: req.body.url})} was sending succesfully`);
-        res.send(`POST request body ${JSON.stringify({url: req.body.url})} was sending succesfully`);
-    })
+app.use(({res}) => {
+    const message = 'Chargement ...';
+    res.send(message);
+});
 
-    app.use(({res}) => {
-        const message = 'Chargement ...';
-        res.send(message);
-    })
+var server = app.listen(ConstructURL.getServerPort(), () => {
+    log.info(`Server listening on port : ${ConstructURL.getServerPort()}`);
+});
 
-    var server = app.listen(ConstructURL.getServerPort(), () => {
-        log.info(`Server listening on port : ${ConstructURL.getServerPort()}`);
-    });
-})
+module.exports = server
