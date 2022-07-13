@@ -43,12 +43,12 @@ window.addEventListener('DOMContentLoaded', () => {
       document.getElementsByTagName('head')[0].appendChild(base);
       var head = document.getElementsByTagName('head')[0];
       let cssFiles = fs.readdirSync(path.join(__dirname, './static/help/assets/style'))
-      
+      let urlConfig = `${configViewer.protocol}://${configViewer.hostname}:${configViewer.server_port}`;
       for(let file of cssFiles){
         var link  = document.createElement('link');
         link.rel  = 'stylesheet';
         link.type = 'text/css';
-        link.href = `http://localhost:60000/help/assets/style/${file}`;
+        link.href = `${urlConfig}/help/assets/style/${file}`;
         head.appendChild(link);
       }
 
