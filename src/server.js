@@ -27,6 +27,7 @@ app
 .use(bodyParser.json())
 .use(express.static(path.join(__dirname, '../static')));
 
+
 ContentIndexer.tocIndexer();
 
 log.debug("Product ID = [" + ContentIndexer.getMultiDocContent().productId + "]; Plugin ID = [" + ContentIndexer.getMultiDocContent().pluginId + "];")
@@ -37,11 +38,11 @@ const urlSchema = {
     type: 'object',
     required: ['url'],
     properties: {
-        url: {
-            type: 'string',
-        }
-    },
-};
+      url: {
+        type: 'string',
+      }
+  },
+}
 
 app.post('/viewerurl', validate({body: urlSchema}),(req, res) => {
     res.setHeader('Content-Type', 'application/json');
@@ -54,6 +55,8 @@ app.post('/viewerurl', validate({body: urlSchema}),(req, res) => {
         res.status(404).json({message});
     }
     
+    ipc.send('requested-url', req.body.url);
+    
     let splitUrl = req.body.url.split('/');
     let languageCode = splitUrl[splitUrl.length -1];
 
@@ -63,8 +66,7 @@ app.post('/viewerurl', validate({body: urlSchema}),(req, res) => {
 
     res.status(200).json(`POST request body ${JSON.stringify({url: req.body.url})} was sending succesfully`);
     log.debug(`POST request body ${JSON.stringify({url: req.body.url})} was sending succesfully`);
-
-    ipc.send('requested-url', req.body.url);
+   
 });
 
 app.get('/httpd/api/search', (req, res) => {
@@ -95,6 +97,7 @@ app.get('/httpd/api/search', (req, res) => {
 });
 
 app.use(({res}) => {
+    const message = 'Chargement ...';
     res.send(message);
 });
 
