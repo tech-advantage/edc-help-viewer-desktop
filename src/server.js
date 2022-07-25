@@ -27,11 +27,9 @@ app
 .use(express.static(path.join(__dirname, '../static')));
 
 ContentIndexer.tocIndexer();
-
+ContentIndexer.createIndex();
 
 log.debug("Product ID = [" + ContentIndexer.getMultiDocContent().productId + "]; Plugin ID = [" + ContentIndexer.getMultiDocContent().pluginId + "];")
-
-ContentIndexer.createIndex();
 
 const urlSchema = {
     type: 'object',

@@ -33,7 +33,6 @@ class ContentIndexer{
         for(let toc of tocJsonFile.toc){
             allTocsFiles.push(toc);
         }
-
         for(let toc of allTocsFiles){
             ContentIndexer.indexTocReference(productFolder, toc);
         }
@@ -81,9 +80,8 @@ class ContentIndexer{
         let tocXjsonFile = productFolder + "\\" + tocReference.file;
         
         if(tocXjsonFile){
-            let tocJsonFile = require(tocXjsonFile);
             let languageCode;
-
+            let tocJsonFile = require(tocXjsonFile);
             let strategyId = tocJsonFile.id;
             let strategyLabel = null;
             let fieldValue = null;
@@ -103,18 +101,14 @@ class ContentIndexer{
      * Create and write the index with lunr
      */
     static createIndex(){
-
         let pagesIndex;
         pagesIndex = ContentIndexer.documents;
-         
         let lunrIndex = lunr(function () {
             this.pipeline.remove(lunr.stopWordFilter);
             this.pipeline.remove(lunr.stemmer);
-            
             this.field("label");
             this.field("content");
             this.ref("id");
-           
             pagesIndex.forEach(function (doc){
                 this.add(doc);
             }, this)
