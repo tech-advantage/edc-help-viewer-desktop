@@ -1,41 +1,41 @@
-const ConfigElectronViewer = require('./ConfigElectronViewer');
-const path = require('path');
+const ConfigElectronViewer = require('./ConfigElectronViewer')
+const path = require('path')
 
 class ConstructURL {
-    /**
+  /**
      * Return the url constructed
-     * 
+     *
      * @returns {string} the url constructed
      */
-    static getUrl() {
-        return ConfigElectronViewer.getProtocol() + '://' + ConfigElectronViewer.getHostName() + ':' + ConfigElectronViewer.getServerPort();
-    }
+  static getUrl () {
+    return ConfigElectronViewer.getProtocol() + '://' + ConfigElectronViewer.getHostName() + ':' + ConfigElectronViewer.getServerPort()
+  }
 
-    /**
+  /**
      * Return the home page of viewer
-     * 
+     *
      * @returns {string} the home viewer url
      */
-    static getHelpViewerHomePath(){
-        return this.getUrl() + '/help/index.html';
-    }
+  static getHelpViewerHomePath () {
+    return this.getUrl() + '/help/index.html'
+  }
 
-    /**
+  /**
      * Return the preload html file
-     * 
+     *
      * @returns {string} the static index.html
      */
-    static getStaticFileLoaderPath(){
-        return `file://${path.join(__dirname, '../../', 'public/index.html')}`;
-    }
+  static getStaticFileLoaderPath () {
+    return `file://${path.join(__dirname, '../../', 'public/index.html')}`
+  }
 
-    /**
+  /**
      * Return the viewer config path
-     * 
+     *
      * @returns {string} the static viewer config path
      */
-    static getStaticViewerConfigPath(){
-        return path.join(__dirname, '../../', 'static/help/assets/config.json');
-    }
+  static getStaticViewerConfigPath () {
+    return path.join(__dirname, '../../', 'static/help/assets/config.json')
+  }
 }
 module.exports = ConstructURL
