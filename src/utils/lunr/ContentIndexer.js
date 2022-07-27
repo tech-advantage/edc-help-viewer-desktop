@@ -119,5 +119,4 @@ class ContentIndexer{
     }
       
 }
-
 module.exports = ContentIndexer;

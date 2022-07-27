@@ -1,5 +1,6 @@
-const { Menu } = require('electron');
+const { Menu, BrowserWindow } = require('electron');
 const config = require('../conf/config_electron_viewer.json');
+const ConstructURL = require('./utils/ConstructURL');
 const isMac = process.platform === 'darwin';
 const isEnabledMenu = config.isEnableMenu;
 
@@ -27,6 +28,16 @@ const template = [
     {
         label: 'View',
         submenu: [
+          { label: 'Back to Home page',
+              click(menuItem, browserWindow, event){
+                browserWindow.loadURL(ConstructURL.getHelpViewerHomePath())
+              }
+          },
+          { label: 'Previous page',
+              click(menuItem, browserWindow, event){
+                browserWindow.webContents.goBack()
+              }
+          },
           { type: 'separator' },
           { role: 'resetZoom' },
           { role: 'zoomIn' },

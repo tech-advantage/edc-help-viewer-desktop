@@ -35,5 +35,4 @@ class HtmlFormatter {
     }
 
 }
-
 module.exports = HtmlFormatter;

@@ -1,4 +1,4 @@
-const { app, BrowserWindow, globalShortcut, ipcMain} = require('electron');
+const { app, BrowserWindow, ipcMain} = require('electron');
 const path = require('path');
 const rootPath = require('electron-root-path').rootPath;
 const log = require('electron-log');
@@ -23,15 +23,14 @@ function createWindow(){
             preload: path.join(__dirname, './preload.js')
         }
     });
+    
     mainWindow.maximize()
-    mainWindow.webContents.openDevTools();
     mainWindow.loadURL(`${ConstructURL.getStaticFileLoaderPath()}`)
     .then(() => {
         log.info('index.html was loaded successfully');
         mainWindow.loadURL(`${ConstructURL.getHelpViewerHomePath()}`)
         .then(() => {
             log.info('Home page viewer was loaded successfully')
-            
         })
         .catch(err => log.error(err));
     })
@@ -68,7 +67,6 @@ function getAppIcon(){
 }
 
 app.whenReady().then(() => {
-
     // When the app is ready, run the mainWindow
     createWindow();
   
