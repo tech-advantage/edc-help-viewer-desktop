@@ -71,14 +71,14 @@ app.post('/viewerurl', validate({ body: urlSchema }), (req, res) => {
 // GET Request to find the indexed content from lunr
 app.get('/httpd/api/search', (req, res) => {
   const query = req.query.query
-  const exactMatch = req.query['exact-match']
+  const matchWholeWord = req.query['match-whole-word']
   const lang = req.query.lang
-  const limit = parseInt(req.query.limit)
-  let getSearchResults = SearchHandler.getSearchResults(query, exactMatch, lang || 'en')
+  const maxResultNumber = parseInt(req.query['max-result-number'])
+  let getSearchResults = SearchHandler.getSearchResults(query, matchWholeWord, lang || 'en')
   res.setHeader('Content-Type', 'application/json')
 
-  if (limit && limit > 0) {
-    getSearchResults = getSearchResults.slice(Math.max(getSearchResults.length - limit, 0))
+  if (maxResultNumber && maxResultNumber > 0) {
+    getSearchResults = getSearchResults.slice(Math.max(getSearchResults.length - maxResultNumber, 0))
   }
 
   if (res.status === 500) {
@@ -89,7 +89,7 @@ app.get('/httpd/api/search', (req, res) => {
     res.status(404).json({ message })
   }
 
-  log.debug('Query parameters: Query=[' + query + '], exactMatch=[' + exactMatch + '], lang=[' + lang + '], limit=[' + limit + ']')
+  log.debug('Query parameters: Query=[' + query + '], matchWholeWord=[' + matchWholeWord + '], lang=[' + lang + '], maxResultNumber=[' + maxResultNumber + ']')
   log.debug('Result length = ' + getSearchResults.length)
 
   res.status(200).json(getSearchResults)
