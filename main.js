@@ -21,14 +21,15 @@ function createWindow () {
       nodeIntegration: false,
       contextIsolation: true,
       preload: path.join(__dirname, './preload.js')
-    }
+    },
+    show: false
   })
 
-  mainWindow.maximize()
   mainWindow.loadURL(`${ConstructURL.getStaticFileLoaderPath()}`)
     .then(() => {
       log.info('index.html was loaded successfully')
       mainWindow.loadURL(`${ConstructURL.getHelpViewerHomePath()}`)
+
         .then(() => {
           log.info('Home page viewer was loaded successfully')
         })
@@ -39,10 +40,8 @@ function createWindow () {
   // Receive request from server
   ipcMain.on('requested-url', (e, url) => {
     mainWindow.loadURL(url)
-    if (mainWindow.isMinimized()) {
-      mainWindow.focus()
-    }
-
+    mainWindow.show()
+    mainWindow.maximize()
     // If unknown URL, redirect to viewer homepage
     mainWindow.webContents.on('did-fail-load', function () {
       log.error('Failed to load URL: ' + url)
