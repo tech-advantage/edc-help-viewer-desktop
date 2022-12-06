@@ -21,27 +21,31 @@ function createWindow () {
       nodeIntegration: false,
       contextIsolation: true,
       preload: path.join(__dirname, './preload.js')
-    },
-    show: false
+    }, 
   })
-
+  mainWindow.maximize()
+  mainWindow.webContents.reloadIgnoringCache()
+  mainWindow.webContents.openDevTools();
+  mainWindow.maximize()
   mainWindow.loadURL(`${ConstructURL.getStaticFileLoaderPath()}`)
+  .then(() => {
+    log.info('index.html was loaded successfully')
+    mainWindow.loadURL(`${ConstructURL.getHelpViewerHomePath()}`)
+    
     .then(() => {
-      log.info('index.html was loaded successfully')
-      mainWindow.loadURL(`${ConstructURL.getHelpViewerHomePath()}`)
-
-        .then(() => {
-          log.info('Home page viewer was loaded successfully')
-        })
-        .catch(err => log.error(err))
+      log.info('Home page viewer was loaded successfully')
+     
     })
     .catch(err => log.error(err))
-
+  })
+  .catch(err => log.error(err))
+  
   // Receive request from server
   ipcMain.on('requested-url', (e, url) => {
     mainWindow.loadURL(url)
     mainWindow.show()
-    mainWindow.maximize()
+ 
+    mainWindow.focus()
     // If unknown URL, redirect to viewer homepage
     mainWindow.webContents.on('did-fail-load', function () {
       log.error('Failed to load URL: ' + url)
@@ -52,7 +56,16 @@ function createWindow () {
         .catch(err => log.error(err))
     })
   })
+
+ 
+
+  mainWindow.webContents.on('new-window', function(e, url) {
+    e.preventDefault();
+    require('electron').shell.openExternal(url);
+  });
 }
+
+
 
 function getAppIcon () {
   switch (process.platform) {
@@ -65,10 +78,11 @@ function getAppIcon () {
   }
 }
 
+
 app.whenReady().then(() => {
   // When the app is ready, run the mainWindow
   createWindow()
-
+  
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })

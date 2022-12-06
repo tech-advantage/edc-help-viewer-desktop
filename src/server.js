@@ -13,7 +13,7 @@ const ContentIndexer = require('./utils/lunr/ContentIndexer')
 const SearchHandler = require('./utils/lunr/SearchHandler')
 const { validate } = new Validator()
 let loaderMessage = 'Loading ...'
-
+let message = ''
 // Method to format the writings logs
 getLogTransportConsole()
 getLogTransportFile()
@@ -43,6 +43,10 @@ const urlSchema = {
   }
 }
 
+function hasQueryParams (url) {
+  return url.indexOf('?') !== -1
+}
+
 // POST Request sended by the help viewer to redirect to the clicked link from the popover
 app.post('/viewerurl', validate({ body: urlSchema }), (req, res) => {
   const splitUrl = req.body.url.split('/')
@@ -70,11 +74,20 @@ app.post('/viewerurl', validate({ body: urlSchema }), (req, res) => {
 
 // GET Request to find the indexed content from lunr
 app.get('/httpd/api/search', (req, res) => {
+  if (hasQueryParams(req.url) == false) {
+    message = 'Query parameters are missing'
+    res.status(400).json({ message })
+  }
   const query = req.query.query
-  const matchWholeWord = req.query['match-whole-word']
-  const lang = req.query.lang
+  let matchWholeWord = req.query['match-whole-word']
+  let matchCase = req.query['match-case']
+
+  matchWholeWord = matchWholeWord == undefined ? false : matchWholeWord != 'false'
+  matchCase = matchCase == undefined ? false : matchCase != 'false'
+
+  const lang = req.query.lang.length == '' ? 'en' : req.query.lang
   const maxResultNumber = parseInt(req.query['max-result-number'])
-  let getSearchResults = SearchHandler.getSearchResults(query, matchWholeWord, lang || 'en')
+  let getSearchResults = SearchHandler.getSearchResults(query, lang, matchWholeWord, matchCase, maxResultNumber)
   res.setHeader('Content-Type', 'application/json')
 
   if (maxResultNumber && maxResultNumber > 0) {
@@ -85,12 +98,9 @@ app.get('/httpd/api/search', (req, res) => {
     log.error(req, res)
     res.send('Internal Server Error')
   } else if (res.status === 404) {
-    const message = 'Unable to find the requested resource ! You can try another URL.'
+    message = 'Unable to find the requested resource ! You can try another URL.'
     res.status(404).json({ message })
   }
-
-  log.debug('Query parameters: Query=[' + query + '], matchWholeWord=[' + matchWholeWord + '], lang=[' + lang + '], maxResultNumber=[' + maxResultNumber + ']')
-  log.debug('Result length = ' + getSearchResults.length)
 
   res.status(200).json(getSearchResults)
 })

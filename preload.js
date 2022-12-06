@@ -6,15 +6,13 @@ window.addEventListener('DOMContentLoaded', () => {
   const imgViewer = document.querySelector('.img-content img')
   const imgContent = document.querySelector('.img-content')
 
-  if (ConfigElectronViewer.getServerPort() === 60000) {
+  if (ConfigElectronViewer.getServerPort() !== null) {
     require('./src/server.js')
     if (window.origin === 'http://localhost:60000') {
-      if (imgContent === null) {
+      if (imgContent == null) {
         const allEsScripts = [
           createEsScript('/help/runtime-es2015.js'),
           createEsScript('/help/polyfills-es2015.js'),
-          createEsScript('/help/styles-es2015.js'),
-          createEsScript('/help/vendor-es2015.js'),
           createEsScript('/help/main-es2015.js')
         ]
 
@@ -26,13 +24,11 @@ window.addEventListener('DOMContentLoaded', () => {
           const head = document.getElementsByTagName('head')[0]
           const cssFiles = fs.readdirSync(path.join(__dirname, './static/help/assets/style'))
           const urlConfig = `${ConfigElectronViewer.getProtocol()}://${ConfigElectronViewer.getHostName()}:${ConfigElectronViewer.getServerPort()}`
-
+          const linkStyleBase = createLinkStyleFile('styles.css')
+          head.appendChild(linkStyleBase)
           for (const file of cssFiles) {
-            const link = document.createElement('link')
-            link.rel = 'stylesheet'
-            link.type = 'text/css'
-            link.href = `${urlConfig}/help/assets/style/${file}`
-            head.appendChild(link)
+            const linksStyleAssets = createLinkStyleFile(`${urlConfig}/help/assets/style/${file}`)
+            head.appendChild(linksStyleAssets)
           }
           const elem = document.createElement('app-root')
           document.body.prepend(elem)
@@ -47,6 +43,14 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   }
 })
+
+function createLinkStyleFile (fileName) {
+  const link = document.createElement('link')
+  link.rel = 'stylesheet'
+  link.type = 'text/css'
+  link.href = fileName
+  return link
+}
 
 function createEsScript (fileName) {
   const esScript = document.createElement('script')
