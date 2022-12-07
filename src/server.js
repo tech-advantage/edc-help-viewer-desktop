@@ -1,25 +1,19 @@
 const ipc = require('electron').ipcRenderer
 const express = require('express')
-const log = require('electron-log')
 const { Validator } = require('express-json-validator-middleware')
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const path = require('path')
 const app = express()
-
-const { getLogTransportConsole, getLogTransportFile, getLogResolvePath } = require('./lib/logFormat')
 const ConfigElectronViewer = require('./utils/ConfigElectronViewer')
 const ContentIndexer = require('./utils/lunr/ContentIndexer')
 const SearchHandler = require('./utils/lunr/SearchHandler')
+const Logger = require('./lib/Logger')
 const { validate } = new Validator()
 let loaderMessage = 'Loading ...'
 let message = ''
-// Method to format the writings logs
-getLogTransportConsole()
-getLogTransportFile()
-getLogResolvePath()
 
-log.info('Server started')
+Logger.log().info('Server started')
 
 app
   .use(cors())
@@ -31,7 +25,7 @@ ContentIndexer.tocIndexer()
 // Create index from the documentation
 ContentIndexer.createIndex()
 
-log.debug('Product ID = [' + ContentIndexer.getMultiDocContent().productId + ']; Plugin ID = [' + ContentIndexer.getMultiDocContent().pluginId + '];')
+Logger.log().debug('Product ID = [' + ContentIndexer.getMultiDocContent().productId + ']; Plugin ID = [' + ContentIndexer.getMultiDocContent().pluginId + '];')
 
 const urlSchema = {
   type: 'object',
@@ -55,7 +49,7 @@ app.post('/viewerurl', validate({ body: urlSchema }), (req, res) => {
   res.setHeader('Content-Type', 'application/json')
 
   if (res.status === 500) {
-    log.error(req, res)
+    Logger.log().error(req, res)
     res.send('Internal Server Error')
   } else if (res.status === 404) {
     const message = 'Unable to find the requested resource ! You can try another URL.'
@@ -68,7 +62,7 @@ app.post('/viewerurl', validate({ body: urlSchema }), (req, res) => {
     loaderMessage = 'Chargement ...'
   }
 
-  log.debug(`POST request body ${JSON.stringify({ url: req.body.url })} was sending succesfully`)
+  Logger.log().debug(`POST request body ${JSON.stringify({ url: req.body.url })} was sending succesfully`)
   res.send(`POST request body ${JSON.stringify({ url: req.body.url })} was sending succesfully`)
 })
 
@@ -95,7 +89,7 @@ app.get('/httpd/api/search', (req, res) => {
   }
 
   if (res.status === 500) {
-    log.error(req, res)
+    Logger.log().error(req, res)
     res.send('Internal Server Error')
   } else if (res.status === 404) {
     message = 'Unable to find the requested resource ! You can try another URL.'
@@ -111,5 +105,5 @@ app.use(({ res }) => {
 })
 
 const server = app.listen(ConfigElectronViewer.getServerPort(), () => {
-  log.info(`Server listening on port : ${ConfigElectronViewer.getServerPort()}`)
+  Logger.log().info(`Server listening on port : ${ConfigElectronViewer.getServerPort()}`)
 })

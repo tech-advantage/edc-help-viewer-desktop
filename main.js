@@ -1,17 +1,12 @@
 const { app, BrowserWindow, ipcMain } = require('electron')
 const path = require('path')
+const Logger = require('./src/lib/Logger.js')
 const rootPath = require('electron-root-path').rootPath
-const log = require('electron-log')
 require('./src/menu.js')
-const { getLogTransportConsole, getLogTransportFile, getLogResolvePath } = require('./src/lib/logFormat')
-const ConstructURL = require('./src/utils/ConstructURL')
+
+const PathResolver = require('./src/utils/PathResolver')
 
 function createWindow () {
-  // Method to format the writings logs
-  getLogTransportConsole()
-  getLogTransportFile()
-  getLogResolvePath()
-
   // Create main window
   const mainWindow = new BrowserWindow({
     width: 800,
@@ -27,18 +22,18 @@ function createWindow () {
   mainWindow.webContents.reloadIgnoringCache()
   mainWindow.webContents.openDevTools();
   mainWindow.maximize()
-  mainWindow.loadURL(`${ConstructURL.getStaticFileLoaderPath()}`)
+  mainWindow.loadURL(`${PathResolver.getStaticFileLoaderPath()}`)
   .then(() => {
-    log.info('index.html was loaded successfully')
-    mainWindow.loadURL(`${ConstructURL.getHelpViewerHomePath()}`)
+    Logger.log().info('index.html was loaded successfully')
+    mainWindow.loadURL(`${PathResolver.getHelpViewerHomePath()}`)
     
     .then(() => {
-      log.info('Home page viewer was loaded successfully')
+      Logger.log().info('Home page viewer was loaded successfully')
      
     })
-    .catch(err => log.error(err))
+    .catch(err => Logger.log().error(err))
   })
-  .catch(err => log.error(err))
+  .catch(err => Logger.log().error(err))
   
   // Receive request from server
   ipcMain.on('requested-url', (e, url) => {
@@ -48,12 +43,12 @@ function createWindow () {
     mainWindow.focus()
     // If unknown URL, redirect to viewer homepage
     mainWindow.webContents.on('did-fail-load', function () {
-      log.error('Failed to load URL: ' + url)
-      mainWindow.loadURL(`${ConstructURL.getHelpViewerHomePath()}`)
+      Logger.log().error('Failed to load URL: ' + url)
+      mainWindow.loadURL(`${PathResolver.getHelpViewerHomePath()}`)
         .then(() => {
-          log.info('Home page viewer was loaded successfully')
+          Logger.log().info('Home page viewer was loaded successfully')
         })
-        .catch(err => log.error(err))
+        .catch(err => Logger.log().error(err))
     })
   })
 

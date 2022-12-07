@@ -1,6 +1,6 @@
 const { Menu } = require('electron')
 const config = require('../conf/config_electron_viewer.json')
-const ConstructURL = require('./utils/ConstructURL')
+const PathResolver = require('./utils/PathResolver')
 const isMac = process.platform === 'darwin'
 const isEnabledMenu = config.isEnableMenu
 
@@ -33,7 +33,7 @@ const template = [
       {
         label: 'Back to Home page',
         click (menuItem, browserWindow, event) {
-          browserWindow.loadURL(ConstructURL.getHelpViewerHomePath())
+          browserWindow.loadURL(PathResolver.getHelpViewerHomePath())
         }
       },
       {

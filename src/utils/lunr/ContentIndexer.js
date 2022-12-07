@@ -4,7 +4,7 @@ const fs = require('fs')
 const lunr = require('lunr')
 
 const htmlFormatter = require('../HtmlFormatter')
-const { Token } = require('lunr')
+const Logger = require('../../lib/Logger')
 
 class ContentIndexer {
   static docBasePath = '../../../static/doc'

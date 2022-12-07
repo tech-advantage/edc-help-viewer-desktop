@@ -1,10 +1,9 @@
 const homedir = require('os').homedir()
 const path = require('path')
-const log = require('electron-log')
 const fs = require('fs')
 const lunr = require('lunr')
 const ContentIndexer = require('./ContentIndexer')
-const { getLogTransportConsole, getLogTransportFile, getLogResolvePath } = require('../../lib/logFormat')
+const Logger = require('../../lib/Logger')
 
 class SearchHandler {
   static homePath = path.join(homedir, '/edc_help_viewer/index/lunr.json')
@@ -18,22 +17,10 @@ class SearchHandler {
      * @returns {Array}
      */
   static getSearchResults (query, languageCode, matchWholeWord, matchCase, maxResultNumber) {
+    
     let result
     const idxLunr = fs.readFileSync(SearchHandler.homePath, { encoding: 'utf8', flag: 'r' })
     const data = JSON.parse(idxLunr)
-    // if(matchCase){
-    //   var index = data.fields.indexOf("content_lower");
-    //   console.log(index,"indexxx");
-    //   if (index !== -1) {
-    //     data.fields.splice(index, 1);
-    //   }
-    // } else {
-    //   var index = data.fields.indexOf("content");
-    //   console.log(index,"indexxx");
-    //   if (index !== -1) {
-    //     data.fields.splice(index, 1);
-    //   }
-    // }
 
     const idx = lunr.Index.load(data)
     if (!matchWholeWord) {
@@ -46,7 +33,7 @@ class SearchHandler {
       }
     }
 
-    log.debug('Query parameters: Query=[' + query + '], lang=[' + languageCode + '], matchWholeWord=[' + matchWholeWord + '], matchCase=[' + matchCase + '], maxResultNumber=[' + maxResultNumber + ']')
+    Logger.log().debug('Query parameters: Query=[' + query + '], lang=[' + languageCode + '], matchWholeWord=[' + matchWholeWord + '], matchCase=[' + matchCase + '], maxResultNumber=[' + maxResultNumber + ']')
 
     return idx.search(query).flatMap((hit) => {
       if (hit.ref === 'undefined') return []

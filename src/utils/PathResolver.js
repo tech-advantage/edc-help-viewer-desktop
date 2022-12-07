@@ -1,7 +1,7 @@
 const ConfigElectronViewer = require('./ConfigElectronViewer')
 const path = require('path')
 
-class ConstructURL {
+class PathResolver {
   /**
      * Return the url constructed
      *
@@ -37,5 +37,14 @@ class ConstructURL {
   static getStaticViewerConfigPath () {
     return path.join(__dirname, '../../', 'static/help/assets/config.json')
   }
+
+  /**
+   * Return the home path
+   * 
+   * @returns the home path
+   */
+  static getUserHome () {
+    return process.env[(process.platform === 'win32') ? 'USERPROFILE' : 'HOME']
+  }
 }
-module.exports = ConstructURL
+module.exports = PathResolver
