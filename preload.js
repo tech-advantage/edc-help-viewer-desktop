@@ -1,6 +1,7 @@
 const ConfigElectronViewer = require('./src/utils/ConfigElectronViewer')
 const path = require('path')
 const fs = require('fs')
+const PathResolver = require('./src/utils/PathResolver')
 
 window.addEventListener('DOMContentLoaded', () => {
   const imgViewer = document.querySelector('.img-content img')
@@ -8,7 +9,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
   if (ConfigElectronViewer.getServerPort() !== null) {
     require('./src/server.js')
-    if (window.origin === 'http://localhost:60000') {
+    if (window.origin === PathResolver.getUrl()) {
       if (imgContent == null) {
         const allEsScripts = [
           createEsScript('/help/runtime-es2015.js'),
@@ -23,7 +24,7 @@ window.addEventListener('DOMContentLoaded', () => {
           document.getElementsByTagName('head')[0].appendChild(base)
           const head = document.getElementsByTagName('head')[0]
           const cssFiles = fs.readdirSync(path.join(__dirname, './static/help/assets/style'))
-          const urlConfig = `${ConfigElectronViewer.getProtocol()}://${ConfigElectronViewer.getHostName()}:${ConfigElectronViewer.getServerPort()}`
+          const urlConfig = `${ConfigElectronViewer.getHostName()}:${ConfigElectronViewer.getServerPort()}`
           const linkStyleBase = createLinkStyleFile('styles.css')
           head.appendChild(linkStyleBase)
           for (const file of cssFiles) {

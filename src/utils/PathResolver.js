@@ -8,7 +8,7 @@ class PathResolver {
      * @returns {string} the url constructed
      */
   static getUrl () {
-    return ConfigElectronViewer.getProtocol() + '://' + ConfigElectronViewer.getHostName() + ':' + ConfigElectronViewer.getServerPort()
+    return ConfigElectronViewer.getHostName() + ':' + ConfigElectronViewer.getServerPort()
   }
 
   /**

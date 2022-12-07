@@ -12,22 +12,12 @@ class ConfigElectronViewer {
   }
 
   /**
-     * Return the protocol url
-     *
-     * @returns {string}
-     */
-  static getProtocol () {
-    if (this.isEmpty(configViewer.protocol)) { return 'http' }
-    return configViewer.protocol
-  }
-
-  /**
      * Return the host name
      *
      * @returns {string}
      */
   static getHostName () {
-    if (this.isEmpty(configViewer.hostname)) { return 'localhost' }
+    if (this.isEmpty(configViewer.hostname)) { return 'http://localhost' }
     return configViewer.hostname
   }
 
