@@ -7,7 +7,7 @@ class ConfigElectronViewer {
      * @param {*} str
      * @returns
      */
-  static isEmpty (str) {
+  static isEmpty(str) {
     return (!str || str.length === 0)
   }
 
@@ -16,7 +16,7 @@ class ConfigElectronViewer {
      *
      * @returns {string}
      */
-  static getHostName () {
+  static getHostName() {
     if (this.isEmpty(configViewer.hostname)) { return 'http://localhost' }
     return configViewer.hostname
   }
@@ -26,7 +26,7 @@ class ConfigElectronViewer {
      *
      * @returns {number}
      */
-  static getServerPort () {
+  static getServerPort() {
     if (!configViewer.server_port) { return 60000 }
     if (typeof configViewer.server_port === 'string') { return parseInt(configViewer.server_port) }
 
@@ -34,11 +34,35 @@ class ConfigElectronViewer {
   }
 
   /**
+   * Return the doc path
+   * 
+   * @returns {string}
+   */
+  static getDocPath() {
+    if (this.isEmpty(configViewer.docPath) && ConfigElectronViewer.isEmbeddedDoc()) {
+      return '/static/doc'
+    }
+    if(process.argv[2] == 'test'){
+      return '/test/ressources/doc'
+    }
+    return configViewer.docPath
+  }
+
+  /**
      * Return true if enable
      *
      * @returns {boolean}
      */
-  static isEnableMenu () {
+   static isEmbeddedDoc() {
+    return !!configViewer.isEmbeddedDoc
+  }
+
+  /**
+     * Return true if enable
+     *
+     * @returns {boolean}
+     */
+  static isEnableMenu() {
     return !!configViewer.isEnableMenu
   }
 
@@ -47,7 +71,7 @@ class ConfigElectronViewer {
      *
      * @returns {string} the viewer img loader
      */
-  static getImgLoader () {
+  static getImgLoader() {
     return configViewer.img_loader
   }
 }

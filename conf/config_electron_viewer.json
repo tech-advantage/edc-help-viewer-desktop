@@ -1,4 +1,6 @@
 {
+    "docPath": "/static/doc",
+    "isEmbeddedDoc": true,
     "isEnableMenu": true,
     "img_loader": "./img/logo_edc.png",
     "hostname": "http://localhost",
