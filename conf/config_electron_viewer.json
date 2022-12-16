@@ -1,8 +1,12 @@
 {
     "docPath": "/static/doc",
     "isEmbeddedDoc": true,
-    "isEnableMenu": true,
     "img_loader": "./img/logo_edc.png",
     "hostname": "http://localhost",
-    "server_port": "60000"
+    "server_port": "60000",
+    "browserWindow": {
+        "isEnableMenu": true,
+        "width": 1900,
+        "height": 1200
+    }
 }
