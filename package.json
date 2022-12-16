@@ -42,6 +42,7 @@
     "filemanager-webpack-plugin": "^6.1.7",
     "mocha": "^10.1.0",
     "nodemon": "^2.0.19",
+    "pre-commit": "^1.2.2",
     "rome": "^11.0.0",
     "save-remote-file-webpack-plugin": "^1.1.0",
     "webpack-merge": "^5.8.0",
@@ -97,5 +98,9 @@
       "oneClick": false,
       "runAfterFinish": true
     }
-  }
+  },
+  "pre-commit": [
+    "rome",
+    "test"
+  ]
 }
