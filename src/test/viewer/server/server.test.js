@@ -1,11 +1,22 @@
 const chai = require("chai");
 const chaiHttp = require("chai-http");
-const server = require("../../../src/server");
+const server = require("../../../expressServer/server");
 const should = chai.should();
+const ContentSearcher = require("../../../utils/lunr/ContentSearcher");
+const DocumentService = require("../../../service/DocumentService");
+var docService = new DocumentService().getInstance();
 
 chai.use(chaiHttp);
 
+function getDocdc() {
+	ContentSearcher.documents = docService.getDocs();
+}
+
 describe("/GET documents", () => {
+	beforeEach(async function () {
+		getDocdc();
+	});
+
 	it("Should search storehouse", (done) => {
 		chai
 			.request(server)
@@ -25,9 +36,7 @@ describe("/POST viewer", () => {
 	it("Should post request", (done) => {
 		chai
 			.request(server)
-			.post(
-				"/httpd/api/help/context/webmailmain/fr.techad.edc/text_editor/en/0",
-			)
+			.post("/httpd/api/help/context/edc/fr.techad.edc/text_editor/en/0")
 			.end((err, res) => {
 				res.should.have.status(200);
 				done();

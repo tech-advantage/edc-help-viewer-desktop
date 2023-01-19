@@ -1,13 +1,24 @@
 const expect = require("chai").expect;
-const ConfigElectronViewer = require("../../../src/utils/ConfigElectronViewer");
-const ContentSearcher = require("../../../src/utils/lunr/ContentSearcher");
+const ContentSearcher = require("../../../utils/lunr/ContentSearcher");
+const DocumentService = require("../../../service/DocumentService");
+var docService = new DocumentService().getInstance();
+
+async function getDocdc() {
+	await docService.getDocCache().then((data) => {
+		ContentSearcher.documents = data;
+	});
+}
 
 function getContentSearcher() {
 	return new ContentSearcher();
 }
 
 describe("Testing getSearchResults function with match case and match whole word value", () => {
-	it("Should search storehouse", (done) => {
+	beforeEach(async function () {
+		await getDocdc();
+	});
+
+	it("Should search storehouse exact match", (done) => {
 		const listResult = getContentSearcher().getSearchResults(
 			"storehouse",
 			"en",
@@ -19,7 +30,7 @@ describe("Testing getSearchResults function with match case and match whole word
 		done();
 	});
 
-	it('Should exact match search with word "instance" ', (done) => {
+	it('Should exact match search with word "instance"', (done) => {
 		const listResult = getContentSearcher().getSearchResults(
 			"instance",
 			"en",
@@ -79,7 +90,7 @@ describe("Testing getSearchResults function with match case and match whole word
 		done();
 	});
 
-	it("Should search Product with first letter capitalize and Match case", (done) => {
+	it("Should search Product with first letter capitalize and Match case set to true", (done) => {
 		const listResult = getContentSearcher().getSearchResults(
 			"Product",
 			"en",
@@ -90,81 +101,13 @@ describe("Testing getSearchResults function with match case and match whole word
 		expect(listResult.length).to.equal(7);
 		done();
 	});
-
-	it("Should return documents containing two consecutive words", (done) => {
-		const listResult = getContentSearcher().getSearchResults(
-			"involving test",
-			"en",
-			true,
-			true,
-			25,
-		);
-		expect(listResult.length).to.equal(1);
-		done();
-	});
-
-	it("Should return documents containing both words entered in the search", (done) => {
-		const listResult = getContentSearcher().getSearchResults(
-			"storehouse managers",
-			"en",
-			false,
-			false,
-			25,
-		);
-		expect(listResult.length).to.equal(3);
-		done();
-	});
-
-	it("Should return documents containing both words entered in the search Match Case and Match Whole Word", (done) => {
-		const listResult = getContentSearcher().getSearchResults(
-			"storehouse managers",
-			"en",
-			true,
-			true,
-			25,
-		);
-		expect(listResult.length).to.equal(3);
-		done();
-	});
-
-	it("Should return documents containing both words entered in the search - Match Whole Word equal false and Match Case equal true", (done) => {
-		const listResult = getContentSearcher().getSearchResults(
-			"storeho managers",
-			"en",
-			false,
-			true,
-			25,
-		);
-		expect(listResult.length).to.equal(3);
-		done();
-	});
-
-	it("Should not return documents because they're not containing both words entered in the search", (done) => {
-		const listResult = getContentSearcher().getSearchResults(
-			"storehouse undefined",
-			"en",
-			false,
-			false,
-			25,
-		);
-		expect(listResult.length).to.equal(0);
-		done();
-	});
-
-	it("Should not return documents because they're not containing both words entered in the search Match Case and Match Whole Word", (done) => {
-		const listResult = getContentSearcher().getSearchResults(
-			"storehouse Managers",
-			"en",
-			true,
-			true,
-			25,
-		);
-		expect(listResult.length).to.equal(2);
-		done();
-	});
 });
 
 describe("Testing getSearchResults function with max result number value", () => {
+	beforeEach(async function () {
+		await getDocdc();
+	});
+
 	it("Should return numbers of documents equal to the number define in getSearchResults param", (done) => {
 		const listResult = getContentSearcher().getSearchResults(
 			"storehouse",
@@ -183,9 +126,83 @@ describe("Testing getSearchResults function with max result number value", () =>
 			"en",
 			false,
 			false,
-			25,
+			11,
 		);
 		expect(listResult.length).to.equal(11);
+		done();
+	});
+});
+
+describe("Testing getSearchResults function with two words searched", () => {
+	it("Should return documents containing both words entered in the searchBar - MatchWholeWord: true, MatchCase: true", (done) => {
+		const listResult = getContentSearcher().getSearchResults(
+			"involving test",
+			"en",
+			true,
+			true,
+			25,
+		);
+		expect(listResult.length).to.equal(1);
+		done();
+	});
+
+	it("Should return documents containing both words entered in the searchBar", (done) => {
+		const listResult = getContentSearcher().getSearchResults(
+			"storehouse managers",
+			"en",
+			false,
+			false,
+			25,
+		);
+		expect(listResult.length).to.equal(3);
+		done();
+	});
+
+	it("Should return documents containing both words entered in the searchBar - MatchWholeWord: true, MatchCase: true", (done) => {
+		const listResult = getContentSearcher().getSearchResults(
+			"storehouse managers",
+			"en",
+			true,
+			true,
+			25,
+		);
+		expect(listResult.length).to.equal(3);
+		done();
+	});
+
+	it("Should not return documents because they're not containing both words entered in the searchBar  - MatchWholeWord: false, MatchCase: false", (done) => {
+		const listResult = getContentSearcher().getSearchResults(
+			"storehouse undefined",
+			"en",
+			false,
+			false,
+			25,
+		);
+		expect(listResult.length).to.equal(0);
+		done();
+	});
+
+	it("Should return documents containing both words entered in the searchBar - MatchWholeWord: false, MatchCase: true", (done) => {
+		const listResult = getContentSearcher().getSearchResults(
+			"storeho managers",
+			"en",
+			false,
+			true,
+			25,
+		);
+		expect(listResult.length).to.equal(0);
+		done();
+	});
+
+	it("Should not return documents because they're not containing both words entered in the searchBar - MatchWholeWord: true, MatchCase: true", (done) => {
+		const listResult = getContentSearcher().getSearchResults(
+			"storehouse Managers",
+			"en",
+			true,
+			true,
+			25,
+		);
+		expect(listResult.length).to.equal(2);
 		done();
 	});
 });
