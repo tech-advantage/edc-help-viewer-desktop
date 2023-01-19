@@ -1,10 +1,12 @@
-const path = require("path");
 const fs = require("fs");
-const elasticlunr = require("elasticlunr");
+const lunr = require("lunr");
 const htmlFormatter = require("../HtmlFormatter");
 const Logger = require("../../lib/Logger");
 const PathResolver = require("../PathResolver");
 const ConfigElectronViewer = require("../ConfigElectronViewer");
+const DocumentService = require("../../service/DocumentService");
+const LangUtils = require("../LangUtils");
+var docService = new DocumentService().getInstance();
 
 class ContentIndexer {
 	static multiDocItems = [];
@@ -16,10 +18,8 @@ class ContentIndexer {
 	 * @returns {string}
 	 */
 	getMultiDocContent() {
-		const multidoc = require(path.join(
-			__dirname,
-			ConfigElectronViewer.getDocPath() + "/multi-doc.json",
-		));
+		const multidoc = require(ConfigElectronViewer.getDocPath() +
+			"/multi-doc.json");
 
 		for (const doc of multidoc) {
 			const docElement = {};
@@ -46,10 +46,7 @@ class ContentIndexer {
 
 		for (const multidoc of this.getMultiDocContent()) {
 			productsDirPath.push(
-				path.join(
-					__dirname,
-					ConfigElectronViewer.getDocPath() + "/" + multidoc.pluginId,
-				),
+				ConfigElectronViewer.getDocPath() + "/" + multidoc.pluginId,
 			);
 		}
 		for (const productDirPath of productsDirPath) {
@@ -97,8 +94,11 @@ class ContentIndexer {
 				strategyLabel,
 				type: toc.type,
 				languageCode,
-				content: htmlFormatter.removeTags(htmlFormatter.splitHtml(toc)).trim(),
+				content: htmlFormatter.removeTags(
+					htmlFormatter.getBodyHtmlContent(toc),
+				),
 			};
+
 			Logger.log().debug(
 				"Help document to index: id: " +
 					topicObject.id +
@@ -110,7 +110,10 @@ class ContentIndexer {
 					topicObject.type +
 					"",
 			);
-			ContentIndexer.documents.push(topicObject);
+
+			// Adding indexed doc to the service
+			docService.setDoc(topicObject);
+
 			existingChildren.push(toc.topics);
 			toc.topics &&
 				ContentIndexer.getContentOfTopicsNodes(
@@ -158,28 +161,82 @@ class ContentIndexer {
 		}
 	}
 
+	static tokenize(str) {
+		return str.split("");
+	}
+
 	/**
 	 * Create and write the index with elasticlunr
 	 */
 	indexWriter() {
 		this.tocIndexer();
+		let docObject = {
+			content: "",
+			languageCode: "",
+		};
+		var caseSensitiveTokenizer = function (obj) {
+			// Split the string into an array of words
+			var str = obj.toString();
+			var tokens = [];
 
-		const pagesIndex = ContentIndexer.documents;
-		const lunrIndex = elasticlunr(function () {
-			this.pipeline.remove(elasticlunr.stopWordFilter);
-			this.pipeline.remove(elasticlunr.stemmer);
+			if (LangUtils.getInfoLanguages().indexOf(str) !== -1) {
+				docObject.languageCode = str;
+			} else {
+				docObject.content = str;
+			}
 
-			this.addField("label");
-			this.addField("type");
-			this.addField("content");
-			this.setRef("id");
+			for (let word of docObject.content.split(/\s+/)) {
+				word = word.replace(/[.,\/#!$%\^&\*;:{}=\\_`~()]/g, "");
+				const startIndex = str.indexOf(word);
+				const endIndex = startIndex + word.length;
+
+				tokens.push(
+					new lunr.Token(word.toLowerCase(), {
+						position: [startIndex, endIndex],
+						index: tokens.length,
+						originalToken: word.replace(/[!.]/gi, ""),
+						languageCode: docObject.languageCode,
+					}),
+				);
+			}
+			return tokens;
+		};
+
+		const pagesIndex = docService.docs;
+
+		docService.setDocCache(pagesIndex);
+
+		const lunrIndex = lunr(function () {
+			this.tokenizer = caseSensitiveTokenizer;
+
+			this.use(addOriginalTokenMetadata);
+			this.use(addLanguageCodeMetadata);
+
+			this.field("content");
+			this.field("languageCode");
+			this.ref("id");
+
+			this.pipeline.remove(lunr.stopWordFilter);
+			this.pipeline.remove(lunr.stemmer);
+			this.pipeline.remove(lunr.trimmer);
+			this.searchPipeline.remove(lunr.stemmer);
+			this.searchPipeline.remove(lunr.trimmer);
 
 			pagesIndex.forEach(function (doc) {
-				this.addDoc(doc);
+				this.add(doc);
 			}, this);
 		});
 
+		function addOriginalTokenMetadata(builder) {
+			builder.metadataWhitelist.push("originalToken");
+		}
+
+		function addLanguageCodeMetadata(builder) {
+			builder.metadataWhitelist.push("languageCode");
+		}
+
 		const indexedContent = JSON.stringify(lunrIndex, null, 4);
+
 		fs.writeFileSync(
 			PathResolver.getUserHome() + "/edc_help_viewer/index/lunr.json",
 			indexedContent,

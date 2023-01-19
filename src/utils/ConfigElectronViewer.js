@@ -1,4 +1,5 @@
 const configViewer = require("../../conf/config_electron_viewer.json");
+const path = require("path");
 
 class ConfigElectronViewer {
 	/**
@@ -45,17 +46,25 @@ class ConfigElectronViewer {
 	 * @returns {string}
 	 */
 	static getDocPath() {
-		configViewer.docPath = "../../../static/doc";
-		if (
-			this.isEmpty(configViewer.docPath) &&
-			ConfigElectronViewer.isEmbeddedDoc()
-		) {
-			configViewer.docPath = "../../../static/doc";
-		}
-		if (process.argv[2] == "test") {
-			configViewer.docPath = "../../../test/ressources/doc";
-		}
-		return configViewer.docPath;
+		let docPath = path.join(__dirname, "../../" + configViewer.docPath);
+
+		this.isEmpty(configViewer.docPath) &&
+			ConfigElectronViewer.isEmbeddedDoc() &&
+			(docPath = path.join(__dirname, "../../static/doc"));
+
+		process.argv[2] == "test" &&
+			(docPath = path.join(__dirname, "../test/resources/doc"));
+
+		return docPath;
+	}
+
+	/**
+	 * Return the last updated date of doc directory
+	 *
+	 * @returns {string}
+	 */
+	static getLastUpdatedDoc() {
+		return configViewer.doc_last_updated;
 	}
 
 	/**

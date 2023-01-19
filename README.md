@@ -8,7 +8,43 @@ First step, install dependencies :
 
     npm install
 
-Once the dependencies are installed, you need to add the documentation directory to the root of the static directory.
+#### Available settings properties (file: conf/config_electron_viewer.json):
+
++ **`isEmbeddedDoc`**: To set if the documentation is embedded.
+
++ **`docPath`**: Path for documentation in static folder, it should be equal to /static/doc if *`isEmbeddedDoc`* equal to true otherwise if you're using the edc-httpd project (https://github.com/tech-advantage/edc-httpd-java) this configuration should be empty.
+    
++ **`img_loader`**: Path for the custom logo, used specifically for customizing the logo of the viewer app.
+
++ **`hostname`**: The host url, should ever be equal to **http://localhost**.
+
++ **`server_port`**: The port for the url who's serve the documentation, if you're using the embedded documentation the port must be equal to 60000. if you're using edc-httpd project the port must be equal to 8088.
+
++ **`browserWindow`**: Parameters for main window of the application
+  + **`isEnableMenu`**: Set this property as true if you want showing the top bar menu.
+
+  + **`width`**: To set the width of the main window.
+
+  + **`height`**: To set the height of the main window.
+
+
+#### Available settings properties (file: conf/config_electron_viewer.json):
+
+See the edc-help-viewer README.md file (https://github.com/tech-advantage/edc-help-viewer/blob/master/README.md)
+
+## Logos and style customization
+
+#### Images
+
+To replace the default images you just need to change their path in the config.json file's `images` attribute:
+
+**`favicon`** The page favicon image.
+
+**`logo_header`** Logo for the header - for better display results, we recommend using a logo with a positive width/height ratio.
+
+**`logo_info`** Image for the information page, when the content could not be found.
+
+Once the dependencies are installed, if you're using the embedded documentation, you need to add the documentation directory to the root of the static directory.
 
 The static directory should look like this :
 

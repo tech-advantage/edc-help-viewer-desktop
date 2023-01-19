@@ -1,6 +1,6 @@
 const ConfigElectronViewer = require("./src/utils/ConfigElectronViewer");
-const path = require("path");
 const fs = require("fs");
+const UrlUtils = require("./src/utils/UrlUtils");
 const PathResolver = require("./src/utils/PathResolver");
 
 window.addEventListener("DOMContentLoaded", () => {
@@ -8,10 +8,11 @@ window.addEventListener("DOMContentLoaded", () => {
 	const imgContent = document.querySelector(".img-content");
 
 	if (ConfigElectronViewer.getServerPort() !== null) {
-		require("./src/server.js");
-		if (window.origin === PathResolver.getUrl()) {
+		require("./src/expressServer/server.js");
+
+		if (window.origin === UrlUtils.getUrl()) {
 			if (imgContent == null) {
-				const allEsScripts = [
+				const esScripts = [
 					createEsScript("/help/runtime-es2015.js"),
 					createEsScript("/help/polyfills-es2015.js"),
 					createEsScript("/help/main-es2015.js"),
@@ -19,28 +20,14 @@ window.addEventListener("DOMContentLoaded", () => {
 
 				const rootElemBase = document.querySelector("app-root");
 				if (!rootElemBase) {
-					const base = document.createElement("base");
-					base.href = "/help/";
-					document.getElementsByTagName("head")[0].appendChild(base);
-					const head = document.getElementsByTagName("head")[0];
-					const cssFiles = fs.readdirSync(
-						path.join(__dirname, "./static/help/assets/style"),
-					);
-					const urlConfig = `${ConfigElectronViewer.getHostName()}:${ConfigElectronViewer.getServerPort()}`;
-					const linkStyleBase = createLinkStyleFile("styles.css");
-					head.appendChild(linkStyleBase);
-					for (const file of cssFiles) {
-						const linksStyleAssets = createLinkStyleFile(
-							`${urlConfig}/help/assets/style/${file}`,
-						);
-						head.appendChild(linksStyleAssets);
-					}
-					const elem = document.createElement("app-root");
-					document.body.prepend(elem);
+					createBaseTag();
+					insertLinkStyleSheet();
+					const appRoot = document.createElement("app-root");
+					document.body.prepend(appRoot);
 				}
 
-				for (let i = 0; i < allEsScripts.length; i++) {
-					document.body.appendChild(allEsScripts[i]);
+				for (const esScript of esScripts) {
+					document.body.appendChild(esScript);
 				}
 			} else {
 				imgViewer.src = ConfigElectronViewer.getImgLoader();
@@ -49,7 +36,28 @@ window.addEventListener("DOMContentLoaded", () => {
 	}
 });
 
-function createLinkStyleFile(fileName) {
+function createBaseTag() {
+	const base = document.createElement("base");
+	base.href = "/help/";
+	document.getElementsByTagName("head")[0].appendChild(base);
+}
+
+function insertLinkStyleSheet() {
+	const head = document.getElementsByTagName("head")[0];
+	const cssFiles = fs.readdirSync(PathResolver.getCssFiles());
+
+	const urlConfig = `${ConfigElectronViewer.getHostName()}:${ConfigElectronViewer.getServerPort()}`;
+	const linkStyleBase = createLinkStyleSheet("styles.css");
+	head.appendChild(linkStyleBase);
+	for (const file of cssFiles) {
+		const linksStyleAssets = createLinkStyleSheet(
+			`${urlConfig}/help/assets/style/${file}`,
+		);
+		head.appendChild(linksStyleAssets);
+	}
+}
+
+function createLinkStyleSheet(fileName) {
 	const link = document.createElement("link");
 	link.rel = "stylesheet";
 	link.type = "text/css";

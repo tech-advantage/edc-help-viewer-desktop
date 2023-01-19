@@ -1,27 +1,14 @@
-const ConfigElectronViewer = require("./ConfigElectronViewer");
 const path = require("path");
+const UrlUtils = require("./UrlUtils");
 
 class PathResolver {
-	/**
-	 * Return the url constructed
-	 *
-	 * @returns {string} the url constructed
-	 */
-	static getUrl() {
-		return (
-			ConfigElectronViewer.getHostName() +
-			":" +
-			ConfigElectronViewer.getServerPort()
-		);
-	}
-
 	/**
 	 * Return the home page of viewer
 	 *
 	 * @returns {string} the home viewer url
 	 */
 	static getHelpViewerHomePath() {
-		return this.getUrl() + "/help/index.html";
+		return UrlUtils.getUrl() + "/help/index.html";
 	}
 
 	/**
@@ -49,6 +36,15 @@ class PathResolver {
 	 */
 	static getUserHome() {
 		return process.env[process.platform === "win32" ? "USERPROFILE" : "HOME"];
+	}
+
+	/**
+	 * Return css files from help directory
+	 *
+	 * @returns files
+	 */
+	static getCssFiles() {
+		return path.join(__dirname, "../../static/help/assets/style");
 	}
 }
 module.exports = PathResolver;

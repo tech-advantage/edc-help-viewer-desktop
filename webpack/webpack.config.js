@@ -10,7 +10,7 @@ const config = {
 	mode: "development",
 	output: {
 		filename: "main.js",
-		path: path.resolve(ROOT_FOLDER, "dist"),
+		path: path.resolve(ROOT_FOLDER, "build"),
 	},
 	externals: {
 		app: 'require("electron")',
@@ -47,7 +47,7 @@ const config = {
 				onEnd: {
 					move: [
 						{
-							source: ROOT_FOLDER + "/dist",
+							source: ROOT_FOLDER + "/build",
 							destination: ROOT_FOLDER + "/static/help",
 						},
 					],
@@ -63,7 +63,7 @@ const config = {
 					],
 					delete: [
 						ROOT_FOLDER + "/" + EDC_VIEWER_FOLDER_VERSION + "",
-						ROOT_FOLDER + "/dist/zip",
+						ROOT_FOLDER + "/build/zip",
 					],
 				},
 			},

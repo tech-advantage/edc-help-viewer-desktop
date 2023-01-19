@@ -1,5 +1,5 @@
 const fs = require("fs");
-const path = require("path");
+const ConfigElectronViewer = require("./ConfigElectronViewer");
 
 class HtmlFormatter {
 	/**
@@ -8,13 +8,9 @@ class HtmlFormatter {
 	 * @param {*} topic
 	 * @returns
 	 */
-	static splitHtml(topic) {
-		const docPath =
-			process.argv[2] == "test"
-				? "..\\..\\test\\ressources\\doc"
-				: "\\..\\..\\static\\doc";
+	static getBodyHtmlContent(topic) {
 		const dataFile = fs.readFileSync(
-			path.join(__dirname, docPath + "\\" + topic.url),
+			ConfigElectronViewer.getDocPath() + "\\" + topic.url,
 			{ encoding: "utf8", flag: "r" },
 		);
 		const splitAboveBody = dataFile
@@ -23,7 +19,7 @@ class HtmlFormatter {
 			.replace(/(\r\n|\n|\r|\t|&nbsp;|&#39;|\s+)/gm, " ");
 		const bodyContent = splitAboveBody.split("</body>").shift();
 
-		return bodyContent;
+		return bodyContent.trim();
 	}
 
 	/**
@@ -39,7 +35,17 @@ class HtmlFormatter {
 			str = str.toString();
 		}
 
-		return str.replace(/(<([^>]+)>)/gi, "");
+		return str.replace(/(<([^>]+)>)/gi, "").trim();
+	}
+
+	/**
+	 * Format the str to be insert in regex
+	 *
+	 * @param {*} str
+	 * @returns str
+	 */
+	static formatRegex(str) {
+		return "(" + str + ")";
 	}
 }
 module.exports = HtmlFormatter;
