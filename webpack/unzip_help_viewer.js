@@ -1,12 +1,12 @@
 const fs = require("fs");
 const admZip = require("adm-zip");
 const { ROOT_FOLDER } = require("../conf/edc_const");
-const path = require("path");
 const Logger = require("../src/lib/Logger");
+const FsUtils = require("../src/utils/FsUtils");
 
 module.exports.unzipViewer = function () {
 	// Read the content of a given directory
-	let zip_file = fs.readdirSync(ROOT_FOLDER + "/dist/zip");
+	let zip_file = FsUtils.readDirSync(ROOT_FOLDER + "/dist/zip");
 
 	// Read the archive
 	let zip = new admZip(ROOT_FOLDER + "/dist/zip/" + zip_file);

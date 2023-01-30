@@ -1,7 +1,7 @@
 {
     "isEmbeddedDoc": true,
     "docPath": "/static/doc",
-    "doc_last_updated": "2023-01-12T09:44:46.298Z",
+    "doc_last_updated": "",
     "img_loader": "./img/logo_edc.png",
     "hostname": "http://localhost",
     "server_port": "60000",
