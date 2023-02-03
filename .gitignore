@@ -1,7 +1,7 @@
 **/node_modules
 **/help
 package.lock.json
-**/doc
+**/static/doc
 **/win-unpacked
 builder-debug.yml
 builder-effective-config.yaml

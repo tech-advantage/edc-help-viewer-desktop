@@ -1,4 +1,7 @@
 const configViewer = require("../../conf/config_electron_viewer.json");
+const path = require("path");
+const FsUtils = require("./FsUtils");
+const DateUtils = require("./DateUtils");
 
 class ConfigElectronViewer {
 	/**
@@ -45,17 +48,40 @@ class ConfigElectronViewer {
 	 * @returns {string}
 	 */
 	static getDocPath() {
-		configViewer.docPath = "../../../static/doc";
-		if (
-			this.isEmpty(configViewer.docPath) &&
-			ConfigElectronViewer.isEmbeddedDoc()
-		) {
-			configViewer.docPath = "../../../static/doc";
-		}
-		if (process.argv[2] == "test") {
-			configViewer.docPath = "../../../test/ressources/doc";
-		}
-		return configViewer.docPath;
+		let docPath = path.join(__dirname, "../../" + configViewer.docPath);
+		const mochaPathSplit = process.argv[1].split("\\");
+		this.isEmpty(configViewer.docPath) &&
+			ConfigElectronViewer.isEmbeddedDoc() &&
+			(docPath = path.join(__dirname, "../../static/doc"));
+
+		mochaPathSplit[mochaPathSplit.length - 1] == "mocha.js" &&
+			(docPath = path.join(__dirname, "../test/resources/doc"));
+
+		return docPath;
+	}
+
+	/**
+	 * Update doc last updated field
+	 *
+	 * @param {*} path
+	 * @param {*} key
+	 * @param {*} value
+	 */
+	static updateLastUpdatedDoc(path, mtimeMs) {
+		const fileData = FsUtils.readFileSync(path);
+		var parseContent = JSON.parse(fileData);
+		parseContent['doc_last_updated'] =
+			DateUtils.getUpdatedAtDoc(mtimeMs);
+		FsUtils.writeFileSync(path, JSON.stringify(parseContent, null, 4));
+	}
+
+	/**
+	 * Return the last updated date of doc directory
+	 *
+	 * @returns {string}
+	 */
+	static getLastUpdatedDoc() {
+		return configViewer.doc_last_updated;
 	}
 
 	/**

@@ -1,29 +1,52 @@
 const homedir = require("os").homedir();
 const path = require("path");
-const fs = require("fs");
-const elasticlunr = require("elasticlunr");
-const ContentIndexer = require("./ContentIndexer");
 const Logger = require("../../lib/Logger");
-const ConfigElectronViewer = require("../ConfigElectronViewer");
+const IndexService = require("../../service/IndexService");
+const HtmlFormatter = require("../HtmlFormatter");
+const LangUtils = require("../LangUtils");
 
 class ContentSearcher {
 	static homePath = path.join(homedir, "/edc_help_viewer/index/lunr.json");
+	static documents = [];
 
 	/**
-	 * Return the defaultLanguage from info.json
+	 * Return query options
 	 *
-	 * @returns defaultLanguage
+	 * @param {*} query
+	 * @param {*} matchWholeWord
+	 * @param {*} matchCase
+	 * @returns options
 	 */
-	getDefautlLangugage() {
-		const infoFile = require(path.join(
-			__dirname,
-			ConfigElectronViewer.getDocPath() +
-				"/" +
-				ContentIndexer.multiDocItems[0].pluginId +
-				"/info.json",
-		));
-		Logger.log().debug("Default language: " + infoFile.defaultLanguage);
-		return infoFile.defaultLanguage;
+	getSearchOptions(query, matchWholeWord, matchCase) {
+		let options = { query };
+		if (!matchWholeWord) {
+			options.query += "*";
+		}
+		if (!matchCase) {
+			options.query = options.query.toLowerCase();
+		}
+		return options.query;
+	}
+
+	/**
+	 * Remove characters who's allow to handle mutliple words required in request
+	 *
+	 * @param {*} query
+	 * @returns query
+	 */
+	handleRequiredWordsQuery(query) {
+		const requiredWords = query.split(" ");
+		const res = [];
+
+		if (requiredWords.length > 1) {
+			for (const split of requiredWords) {
+				res.push(`+${split}`);
+			}
+			query = res.join(" ");
+		} else {
+			query = query;
+		}
+		return query;
 	}
 
 	/**
@@ -43,24 +66,12 @@ class ContentSearcher {
 		matchCase,
 		maxResultNumber,
 	) {
-		const idxLunr = fs.readFileSync(ContentSearcher.homePath, {
-			encoding: "utf8",
-			flag: "r",
-		});
-		const data = JSON.parse(idxLunr);
-		const idx = elasticlunr.Index.load(data);
-
-		let result;
-		let expand = false;
+		const idx = IndexService.getIndex();
 		let counter = 0;
 
-		const boosts = {
-			label: { boosts: 2 },
-			content: { boosts: 1 },
-			type: { boosts: 0.5 },
-		};
-
-		!matchWholeWord ? (expand = true) : (expand = false);
+		languageCode =
+			languageCode.length == 0 ? LangUtils.getDefaultLanguage() : languageCode;
+		query = this.getSearchOptions(query, matchWholeWord, matchCase);
 
 		Logger.log().debug(
 			"Query parameters: Query=[" +
@@ -76,50 +87,93 @@ class ContentSearcher {
 				"]",
 		);
 
-		const searchContent = idx
-			.search(query, { fields: boosts, bool: "AND", expand })
-			.flatMap((hit) => {
-				let regex;
+		query = this.handleRequiredWordsQuery(query);
 
-				if (hit.ref === "undefined") return [];
-				const pageMatch = ContentIndexer.documents.filter(
-					(page) => page.id === hit.ref,
-				);
+		const searchContent = idx.search(query).flatMap((hit) => {
+			let pageMatch = [];
+			if (hit.ref === "undefined") return [];
 
-				counter = counter += 1;
+			!matchWholeWord ? (query = query.replace("*", "")) : query;
+			const keyMetaData = Object.keys(hit.matchData.metadata);
 
-				if (counter <= maxResultNumber) {
-					if (languageCode && languageCode !== undefined) {
-						result = pageMatch.filter(
-							(page) => page.languageCode == languageCode,
-						);
-					} else {
-						result = pageMatch.filter(
-							(page) =>
-								page.languageCode ==
-								(this.getDefautlLangugage() !== undefined
-									? this.getDefautlLangugage()
-									: "en"),
-						);
-					}
+			for (const key of keyMetaData) {
+				const originalTokenKeys =
+					hit.matchData.metadata[key].content.originalToken;
+				const languageCodeKeys =
+					hit.matchData.metadata[key].languageCode.languageCode;
 
-					matchCase &&
-						(regex = this.handleMultipleWordQuery(query, matchWholeWord));
-					matchWholeWord &&
-						matchCase &&
-						(regex = this.handleMultipleWordQuery(query, matchWholeWord));
-
-					if (result[0].content.match(regex) || result[0].label.match(regex)) {
-						return result;
-					}
+				if (languageCodeKeys.indexOf(languageCode) == -1) return [];
+				if (matchCase) {
+					const reg = this.handleWordsMatchQuery(query, matchWholeWord);
+					pageMatch = this.caseSensitiveFilter(
+						pageMatch,
+						originalTokenKeys,
+						reg,
+						hit,
+					);
+				} else {
+					pageMatch = this.filterByRef(pageMatch, hit.ref);
 				}
-				return [];
-			});
+			}
+
+			counter = counter += 1;
+
+			if (counter <= maxResultNumber) {
+				pageMatch = this.filterByLanguageCode(pageMatch, languageCode);
+				return pageMatch;
+			}
+			return [];
+		});
+
 		Logger.log().debug(
 			"Found " + searchContent.length + " results for the search " + query,
 		);
-
 		return searchContent;
+	}
+
+	/**
+	 * Filter pages by case sensitive
+	 *
+	 * @param {*} pageMatch
+	 * @param {*} originalTokenKeys
+	 * @param {*} reg
+	 * @param {*} hit
+	 * @returns pageMatch
+	 */
+	caseSensitiveFilter(pageMatch, originalTokenKeys, reg, hit) {
+		for (const tokenKey of originalTokenKeys) {
+			if (tokenKey.match(reg)) {
+				pageMatch = this.filterByRef(pageMatch, hit.ref);
+			}
+		}
+		return pageMatch;
+	}
+
+	/**
+	 * Filter pages by ref
+	 *
+	 * @param {*} pageMatch
+	 * @param {*} ref
+	 * @returns pageMatch
+	 */
+	filterByRef(pageMatch, ref) {
+		pageMatch = ContentSearcher.documents.filter((page) => page.id === ref);
+		return pageMatch;
+	}
+
+	/**
+	 * Filter pages by languageCode
+	 *
+	 * @param {*} pageMatch
+	 * @param {*} languageCode
+	 * @returns pageMatch
+	 */
+	filterByLanguageCode(pageMatch, languageCode) {
+		if (languageCode !== "" && languageCode !== false)
+			pageMatch = pageMatch.filter(
+				(page) => page.languageCode === languageCode,
+			);
+		return pageMatch;
 	}
 
 	/**
@@ -129,39 +183,33 @@ class ContentSearcher {
 	 * @param {*} exactMatch
 	 * @returns regex
 	 */
-	handleMultipleWordQuery(query, exactMatch) {
-		let splitQuery;
+	handleWordsMatchQuery(query, exactMatch) {
 		let regex;
-		const regMatch = exactMatch == true ? "(\\b)" : "";
+		const exactMatchPattern = exactMatch == true ? "(\\b)" : "";
 		const flag = "g";
+		query = query.replace(/\+/g, " ");
 
 		if (this.hasWhitespace(query)) {
-			splitQuery = query.split(" ");
+			const splitQuery = query.split(" ");
 			for (const value of splitQuery) {
 				if (value !== "") {
 					regex = new RegExp(
-						regMatch + this.formatQueryReg(value) + regMatch,
+						exactMatchPattern +
+							HtmlFormatter.formatRegex(value) +
+							exactMatchPattern,
 						flag,
 					);
 				}
 			}
 		} else {
 			regex = new RegExp(
-				regMatch + this.formatQueryReg(query) + regMatch,
+				exactMatchPattern +
+					HtmlFormatter.formatRegex(query) +
+					exactMatchPattern,
 				flag,
 			);
 		}
 		return regex;
-	}
-
-	/**
-	 * Format the query to be insert in regex
-	 *
-	 * @param {*} query
-	 * @returns format query
-	 */
-	formatQueryReg(query) {
-		return "(" + query + ")";
 	}
 
 	/**

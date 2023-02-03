@@ -1,0 +1,8 @@
+{
+  "vendor": "EDC DEMO",
+  "version": "2.0.0",
+  "name": "EDC Demo Help 2018",
+  "identifier": "edc",
+  "defaultLanguage": "en",
+  "languages": ["en"]
+}
