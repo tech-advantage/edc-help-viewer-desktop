@@ -21,32 +21,7 @@ function createWindow() {
 		show: false,
 	});
 
-	mainWindow.webContents.session.webRequest.onBeforeSendHeaders(
-		(details, callback) => {
-			callback({ requestHeaders: { Origin: "*", ...details.requestHeaders } });
-		},
-	);
-	ConfigElectronViewer.getBrowserWindowHeight();
-	mainWindow.webContents.session.webRequest.onHeadersReceived(
-		(details, callback) => {
-			callback({
-				responseHeaders: {
-					"Access-Control-Allow-Origin": [
-						ConfigElectronViewer.getHostName() +
-							":" +
-							ConfigElectronViewer.getServerPort(),
-					],
-					// We use this to bypass headers
-					"Access-Control-Allow-Headers": [
-						ConfigElectronViewer.getHostName() +
-							":" +
-							ConfigElectronViewer.getServerPort(),
-					],
-					...details.responseHeaders,
-				},
-			});
-		},
-	);
+	handleHeaders(mainWindow);
 
 	mainWindow.webContents.openDevTools();
 
@@ -63,25 +38,55 @@ function createWindow() {
 		})
 		.catch((err) => Logger.log().error(err));
 
+	redirectFromPostRequest(mainWindow);
+
+	mainWindow.webContents.on("new-window", function (e, url) {
+		e.preventDefault();
+		require("electron").shell.openExternal(url);
+	});
+}
+
+function handleHeaders(win) {
+	win.webContents.session.webRequest.onBeforeSendHeaders(
+		(details, callback) => {
+			callback({ requestHeaders: { Origin: "*", ...details.requestHeaders } });
+		},
+	);
+	win.webContents.session.webRequest.onHeadersReceived((details, callback) => {
+		callback({
+			responseHeaders: {
+				"Access-Control-Allow-Origin": [
+					ConfigElectronViewer.getHostName() +
+						":" +
+						ConfigElectronViewer.getServerPort(),
+				],
+				// We use this to bypass headers
+				"Access-Control-Allow-Headers": [
+					ConfigElectronViewer.getHostName() +
+						":" +
+						ConfigElectronViewer.getServerPort(),
+				],
+				...details.responseHeaders,
+			},
+		});
+	});
+}
+
+function redirectFromPostRequest(win) {
 	// Receive request from server
 	ipcMain.on("requested-url", (e, url) => {
-		mainWindow.loadURL(url);
-		mainWindow.show();
+		win.loadURL(url);
+		win.show();
 		// If unknown URL, redirect to viewer homepage
-		mainWindow.webContents.on("did-fail-load", function () {
+		win.webContents.on("did-fail-load", function () {
 			Logger.log().error("Failed to load URL: " + url);
-			mainWindow
+			win
 				.loadURL(`${PathResolver.getHelpViewerHomePath()}`)
 				.then(() => {
 					Logger.log().info("Home page viewer was loaded successfully");
 				})
 				.catch((err) => Logger.log().error(err));
 		});
-	});
-
-	mainWindow.webContents.on("new-window", function (e, url) {
-		e.preventDefault();
-		require("electron").shell.openExternal(url);
 	});
 }
 

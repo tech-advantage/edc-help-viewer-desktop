@@ -1,4 +1,5 @@
 const path = require("path");
+const homedir = require("os").homedir();
 const UrlUtils = require("./UrlUtils");
 
 class PathResolver {
@@ -49,11 +50,29 @@ class PathResolver {
 
 	/**
 	 * Return configElectronViewer file path
-	 * 
+	 *
 	 * @returns configElectronViewer path
 	 */
 	static getConfigElectronViewerPath() {
 		return path.join(__dirname, "../../conf/config_electron_viewer.json");
+	}
+
+	/**
+	 * Return doc cache path
+	 *
+	 * @returns doc cache path
+	 */
+	static getDocCachePath() {
+		return path.join(homedir, "/edc_help_viewer/doc");
+	}
+
+	/**
+	 * Return the lunr index path
+	 *
+	 * @returns lunr index
+	 */
+	static getLunrIndex() {
+		return path.join(homedir, "/edc_help_viewer/index/lunr.json");
 	}
 }
 module.exports = PathResolver;

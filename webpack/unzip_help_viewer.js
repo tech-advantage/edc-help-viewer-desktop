@@ -5,11 +5,11 @@ const Logger = require("../src/lib/Logger");
 const FsUtils = require("../src/utils/FsUtils");
 
 module.exports.unzipViewer = function () {
-	// Read the content of a given directory
-	let zip_file = FsUtils.readDirSync(ROOT_FOLDER + "/dist/zip");
+	// Read the content of the given directory
+	const zipPath = ROOT_FOLDER + "/dist/zip";
 
 	// Read the archive
-	let zip = new admZip(ROOT_FOLDER + "/dist/zip/" + zip_file);
+	const zip = new admZip(zipPath + "/" + FsUtils.readDirSync(zipPath));
 
 	Logger.log().info("%c start unzip", "color: green");
 

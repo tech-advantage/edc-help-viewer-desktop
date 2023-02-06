@@ -13,8 +13,8 @@ const htmlString =
 
 describe("Test DateUtils file", () => {
 	it("Should convert unix timestamp to ISO String", (done) => {
-		const timestamp = DateUtils.getUpdatedAtDoc(1674116218041.9429);
-		expect(timestamp).to.equal("2023-01-19T08:16:58.041Z");
+		const isoString = DateUtils.getUpdatedAtDoc(1674116218041.9429);
+		expect(isoString).to.equal("2023-01-19T08:16:58.041Z");
 		done();
 	});
 });

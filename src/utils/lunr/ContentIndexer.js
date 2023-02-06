@@ -10,7 +10,6 @@ var docService = new DocumentService().getInstance();
 
 class ContentIndexer {
 	static multiDocItems = [];
-	static documents = [];
 
 	/**
 	 * Return multidoc content
@@ -168,7 +167,7 @@ class ContentIndexer {
 	}
 
 	/**
-	 * Create and write the index with elasticlunr
+	 * Create and write the lunr index
 	 */
 	indexWriter() {
 		this.tocIndexer();
@@ -177,7 +176,6 @@ class ContentIndexer {
 			languageCode: "",
 		};
 		var caseSensitiveTokenizer = function (obj) {
-			// Split the string into an array of words
 			var str = obj.toString();
 			var tokens = [];
 
@@ -201,7 +199,7 @@ class ContentIndexer {
 			return tokens;
 		};
 
-		const pagesIndex = docService.docs;
+		const pagesIndex = docService.getDocs();
 
 		docService.setDocCache(pagesIndex);
 

@@ -15,8 +15,10 @@ const DateUtils = require("../utils/DateUtils");
 const PathResolver = require("../utils/PathResolver");
 const FsUtils = require("../utils/FsUtils");
 var docService = new DocumentService().getInstance();
-const homedir = require("os").homedir();
-
+const Cache = require("file-system-cache").default;
+const cache = Cache({
+	basePath: PathResolver.getUserHome() + "/edc_help_viewer/doc",
+});
 Logger.log().info("Server started");
 
 app
@@ -58,6 +60,7 @@ function rewriteIndexWithNewDoc(documents) {
 				PathResolver.getConfigElectronViewerPath(),
 				data.mtimeMs,
 			);
+			cache.clear();
 			// If the documentation directory has changed then we create an index
 			createIndex();
 		}
@@ -69,7 +72,7 @@ app.use("/api", viewerRouter);
 if (ConfigElectronViewer.isEmbeddedDoc()) {
 	initDoc();
 
-	let cacheDocPath = path.join(homedir, "/edc_help_viewer/doc");
+	let cacheDocPath = PathResolver.getDocCachePath();
 
 	FsUtils.openDirSync(cacheDocPath).then(async (dir, err) => {
 		await dir

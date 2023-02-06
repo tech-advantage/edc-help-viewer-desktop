@@ -4,10 +4,9 @@ const lunr = require("lunr");
 
 const ContentIndexer = require("../utils/lunr/ContentIndexer");
 const FsUtils = require("../utils/FsUtils");
+const PathResolver = require("../utils/PathResolver");
 
 class IndexService {
-	static homePath = path.join(homedir, "/edc_help_viewer/index/lunr.json");
-
 	/**
 	 * Create Lunr index
 	 */
@@ -22,7 +21,7 @@ class IndexService {
 	 * @returns index
 	 */
 	static getIndex() {
-		let idxLunr = FsUtils.readFileSync(IndexService.homePath, {
+		let idxLunr = FsUtils.readFileSync(PathResolver.getLunrIndex(), {
 			encoding: "utf8",
 			flag: "r",
 		});

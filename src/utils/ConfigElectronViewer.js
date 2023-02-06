@@ -70,8 +70,7 @@ class ConfigElectronViewer {
 	static updateLastUpdatedDoc(path, mtimeMs) {
 		const fileData = FsUtils.readFileSync(path);
 		var parseContent = JSON.parse(fileData);
-		parseContent['doc_last_updated'] =
-			DateUtils.getUpdatedAtDoc(mtimeMs);
+		parseContent["doc_last_updated"] = DateUtils.getUpdatedAtDoc(mtimeMs);
 		FsUtils.writeFileSync(path, JSON.stringify(parseContent, null, 4));
 	}
 
