@@ -32,14 +32,14 @@ class ConfigElectronViewer {
 	 * @returns {number}
 	 */
 	static getServerPort() {
-		if (!configViewer.server_port) {
+		if (!configViewer.serverPort) {
 			return 60000;
 		}
-		if (typeof configViewer.server_port === "string") {
-			return parseInt(configViewer.server_port);
+		if (typeof configViewer.serverPort === "string") {
+			return parseInt(configViewer.serverPort);
 		}
 
-		return configViewer.server_port;
+		return configViewer.serverPort;
 	}
 
 	/**
@@ -70,7 +70,7 @@ class ConfigElectronViewer {
 	static updateLastUpdatedDoc(path, mtimeMs) {
 		const fileData = FsUtils.readFileSync(path);
 		var parseContent = JSON.parse(fileData);
-		parseContent["doc_last_updated"] = DateUtils.getUpdatedAtDoc(mtimeMs);
+		parseContent["docLastUpdated"] = DateUtils.getUpdatedAtDoc(mtimeMs);
 		FsUtils.writeFileSync(path, JSON.stringify(parseContent, null, 4));
 	}
 
@@ -80,7 +80,7 @@ class ConfigElectronViewer {
 	 * @returns {string}
 	 */
 	static getLastUpdatedDoc() {
-		return configViewer.doc_last_updated;
+		return configViewer.docLastUpdated;
 	}
 
 	/**
@@ -107,7 +107,7 @@ class ConfigElectronViewer {
 	 * @returns {string} the viewer img loader
 	 */
 	static getImgLoader() {
-		return configViewer.img_loader;
+		return configViewer.imgLoader;
 	}
 
 	/**

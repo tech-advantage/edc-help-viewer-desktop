@@ -51,13 +51,12 @@ class DocumentService {
 }
 
 class DocumentSingleton {
-	constructor() {
-		if (!DocumentSingleton.instance) {
-			DocumentSingleton.instance = new DocumentService();
-		}
-	}
+	static instance = null;
 
 	getInstance() {
+		if (DocumentSingleton.instance == null) {
+			DocumentSingleton.instance = new DocumentService();
+		}
 		return DocumentSingleton.instance;
 	}
 }

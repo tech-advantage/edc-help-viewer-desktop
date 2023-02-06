@@ -14,11 +14,11 @@ First step, install dependencies :
 
 + **`docPath`**: Path for documentation in static folder, it should be equal to /static/doc if *`isEmbeddedDoc`* equal to true otherwise if you're using the edc-httpd project (https://github.com/tech-advantage/edc-httpd-java) this configuration should be empty.
     
-+ **`img_loader`**: Path for the custom logo, used specifically for customizing the logo of the viewer app.
++ **`imgLoader`**: Path for the custom logo, used specifically for customizing the logo of the viewer app.
 
 + **`hostname`**: The host url, should ever be equal to **http://localhost**.
 
-+ **`server_port`**: The port for the url who's serve the documentation, if you're using the embedded documentation the port must be equal to 60000. if you're using edc-httpd project the port must be equal to 8088.
++ **`serverPort`**: The port for the url who's serve the documentation, if you're using the embedded documentation the port must be equal to 60000. if you're using edc-httpd project the port must be equal to 8088.
 
 + **`browserWindow`**: Parameters for main window of the application
   + **`isEnableMenu`**: Set this property as true if you want showing the top bar menu.
