@@ -1,7 +1,13 @@
 {
-    "isEnableMenu": true,
-    "img_loader": "./img/logo_edc.png",
-    "protocol": "http",
-    "hostname": "localhost",
-    "server_port": "60000"
+    "isEmbeddedDoc": true,
+    "docPath": "/static/doc",
+    "docLastUpdated": "2023-01-20T13:42:59.504Z",
+    "imgLoader": "./img/logo_edc.png",
+    "hostname": "http://localhost",
+    "serverPort": "60000",
+    "browserWindow": {
+        "isEnableMenu": true,
+        "width": 1900,
+        "height": 1200
+    }
 }

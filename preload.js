@@ -1,69 +1,73 @@
-require('./src/server.js');
-const configViewer = require('./conf/config_electron_viewer.json');
-const path = require('path');
-var fs = require('fs');
+const ConfigElectronViewer = require("./src/utils/ConfigElectronViewer");
+const UrlUtils = require("./src/utils/UrlUtils");
+const PathResolver = require("./src/utils/PathResolver");
+const FsUtils = require("./src/utils/FsUtils");
 
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener("DOMContentLoaded", () => {
+	const imgViewer = document.querySelector(".img-content img");
+	const imgContent = document.querySelector(".img-content");
 
-  let imgContent = document.querySelector('.img-content');
-  let imgViewer = document.querySelector('.img-content img');
+	if (ConfigElectronViewer.getServerPort() !== null) {
+		require("./src/expressServer/server.js");
 
-  if(imgContent == null){
+		if (window.origin === UrlUtils.getUrl()) {
+			if (imgContent == null) {
+				const esScripts = [
+					createEsScript("/help/runtime-es2015.js"),
+					createEsScript("/help/polyfills-es2015.js"),
+					createEsScript("/help/main-es2015.js"),
+				];
 
-    var scriptRuntimeEs2015 = document.createElement('script');
-    scriptRuntimeEs2015.src = '/help/runtime-es2015.js';
-    scriptRuntimeEs2015.type = 'module';
-    scriptRuntimeEs2015.async;
-    
-    var scriptPolyfillsEs2015 = document.createElement('script');
-    scriptPolyfillsEs2015.src = '/help/polyfills-es2015.js';
-    scriptPolyfillsEs2015.type = 'module';
-    scriptPolyfillsEs2015.async;
-    
-    var scriptStylesEs2015 = document.createElement('script');
-    scriptStylesEs2015.src = '/help/styles-es2015.js';
-    scriptStylesEs2015.type = 'module';
-    scriptStylesEs2015.async;
+				const rootElemBase = document.querySelector("app-root");
+				if (!rootElemBase) {
+					createBaseTag();
+					insertLinkStyleSheet();
+					const appRoot = document.createElement("app-root");
+					document.body.prepend(appRoot);
+				}
 
-    var scriptVendorEs2015 = document.createElement('script');
-    scriptVendorEs2015.src = '/help/vendor-es2015.js';
-    scriptVendorEs2015.type = 'module';
-    scriptVendorEs2015.async;
-    
-    var scriptMainEs2015 = document.createElement('script');
-    scriptMainEs2015.src = '/help/main-es2015.js';
-    scriptMainEs2015.type = 'module';
-    scriptMainEs2015.async;
+				for (const esScript of esScripts) {
+					document.body.appendChild(esScript);
+				}
+			} else {
+				imgViewer.src = ConfigElectronViewer.getImgLoader();
+			}
+		}
+	}
+});
 
-    let rootElemBase = document.querySelector('app-root');
+function createBaseTag() {
+	const base = document.createElement("base");
+	base.href = "/help/";
+	document.getElementsByTagName("head")[0].appendChild(base);
+}
 
-    if(!rootElemBase){
-      var base = document.createElement('base');
-      base.href = '/help/';
-      
-      document.getElementsByTagName('head')[0].appendChild(base);
-      var head = document.getElementsByTagName('head')[0];
-      let cssFiles = fs.readdirSync(path.join(__dirname, './static/help/assets/style'))
-      
-      for(let file of cssFiles){
-        var link  = document.createElement('link');
-        link.rel  = 'stylesheet';
-        link.type = 'text/css';
-        link.href = `http://localhost:60000/help/assets/style/${file}`;
-        head.appendChild(link);
-      }
+function insertLinkStyleSheet() {
+	const head = document.getElementsByTagName("head")[0];
+	const cssFiles = FsUtils.readDirSync(PathResolver.getCssFiles());
+	const urlConfig = `${ConfigElectronViewer.getHostName()}:${ConfigElectronViewer.getServerPort()}`;
+	const linkStyleBase = createLinkStyleSheet("styles.css");
+	head.appendChild(linkStyleBase);
+	for (const file of cssFiles) {
+		const linksStyleAssets = createLinkStyleSheet(
+			`${urlConfig}/help/assets/style/${file}`,
+		);
+		head.appendChild(linksStyleAssets);
+	}
+}
 
-      let elem = document.createElement('app-root')
-      document.body.prepend(elem);
-    }
-  
-    document.body.appendChild(scriptRuntimeEs2015);
-    document.body.appendChild(scriptPolyfillsEs2015);
-    document.body.appendChild(scriptStylesEs2015);
-    document.body.appendChild(scriptVendorEs2015);
-    document.body.appendChild(scriptMainEs2015);
+function createLinkStyleSheet(fileName) {
+	const link = document.createElement("link");
+	link.rel = "stylesheet";
+	link.type = "text/css";
+	link.href = fileName;
+	return link;
+}
 
-  } else {
-    imgViewer.src = configViewer.img_loader;
-  }
-})
+function createEsScript(fileName) {
+	const esScript = document.createElement("script");
+	esScript.src = fileName;
+	esScript.type = "module";
+	esScript.async;
+	return esScript;
+}
