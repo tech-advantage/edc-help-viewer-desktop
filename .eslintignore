@@ -1,6 +1,6 @@
-build/
 dist/
 node_modules/
 conf/
 static/
 webpack/
+/forge.config.ts

@@ -9,6 +9,7 @@
 # static
 **/help
 **/static/doc
+**/src/test/resources
 
 # IDEs and editors
 /.idea

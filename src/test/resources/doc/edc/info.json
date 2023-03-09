@@ -4,5 +4,5 @@
   "name": "EDC Demo Help 2018",
   "identifier": "edc",
   "defaultLanguage": "en",
-  "languages": ["en"]
+  "languages": ["en", "fr"]
 }

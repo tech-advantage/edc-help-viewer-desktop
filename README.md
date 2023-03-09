@@ -2,6 +2,8 @@
 
 This project provides a viewer to navigate through edc documentations with electron application.
 
+![Logo EDC](./public/img/logo_edc.png 'Logo EDC')
+
 ## Installation
 
 First step, install dependencies :
@@ -10,23 +12,22 @@ First step, install dependencies :
 
 #### Available settings properties (file: conf/config_electron_viewer.json):
 
-+ **`isEmbeddedDoc`**: To set if the documentation is embedded.
+- **`isEmbeddedDocConfig`**: To set if the documentation is embedded.
 
-+ **`docPath`**: Path for documentation in static folder, it should be equal to /static/doc if *`isEmbeddedDoc`* equal to true otherwise if you're using the edc-httpd project (https://github.com/tech-advantage/edc-httpd-java) this configuration should be empty.
-    
-+ **`imgLoader`**: Path for the custom logo, used specifically for customizing the logo of the viewer app.
+- **`docPath`**: Path for documentation in static folder, it should be equal to /static/doc if _`isEmbeddedDocConfig`_ equal to true otherwise if you're using the edc-httpd project (https://github.com/tech-advantage/edc-httpd-java) this configuration should be empty.
+- **`imgLoader`**: Path for the custom logo, used specifically for customizing the logo of the viewer app.
 
-+ **`hostname`**: The host url, should ever be equal to **http://localhost**.
+- **`hostname`**: The host url, should ever be equal to **http://localhost**.
 
-+ **`serverPort`**: The port for the url who's serve the documentation, if you're using the embedded documentation the port must be equal to 60000. if you're using edc-httpd project the port must be equal to 8088.
+- **`serverPort`**: The port for the url who's serve the documentation, if you're using the embedded documentation the port must be equal to 60000. if you're using edc-httpd project the port must be equal to 8088.
 
-+ **`browserWindow`**: Parameters for main window of the application
-  + **`isEnableMenu`**: Set this property as true if you want showing the top bar menu.
+- **`browserWindow`**: Parameters for main window of the application
 
-  + **`width`**: To set the width of the main window.
+  - **`isEnableMenuConfig`**: Set this property as true if you want showing the top bar menu.
 
-  + **`height`**: To set the height of the main window.
+  - **`width`**: To set the width of the main window.
 
+  - **`height`**: To set the height of the main window.
 
 #### Available settings properties (file: conf/config.json):
 
@@ -54,7 +55,7 @@ The static directory should look like this :
 
 To change the name of the package and the name of the default application, go to the package.json file
 and modify the appId and productName of the build configuration.
-    
+
 Then run build
 
 **`npm run build`**
@@ -62,15 +63,15 @@ Then run build
 In the assets folder and in the folder corresponding to your operating system, you can change the default icon with your own icon.
 For Windows operating system, your icon extension should be (.ico).
 
-* For macOs to darwin folder, icon size should be at least 512x512.
-* For Windows to win32 folder, icon size should be at least 256x256.
-* For Linux to linux folder, recommended sizes: 16, 32, 48, 64, 128, 256 (or just 512).
+- For macOs to darwin folder, icon size should be at least 512x512.
+- For Windows to win32 folder, icon size should be at least 256x256.
+- For Linux to linux folder, recommended sizes: 16, 32, 48, 64, 128, 256 (or just 512).
 
 To change the default image with your own, add your image to the public/img folder and then go to the config_electron_viewer.json file by passing the path to your image.
 
 #### Menu
 
-The application menu can be disabled in the configuration options of the config_electron_viewer.json file by passing the **`isEnableMenu`** option to false.
+The application menu can be disabled in the configuration options of the config_electron_viewer.json file by passing the **`isEnableMenuConfig`** option to false.
 
 ### Run
 
@@ -82,15 +83,12 @@ run the application with :
 
 Launch packaging of application with :
 
-**`npm run pack`**
+**`npm run package`**
 
-Launch distribution of application with :
+Launch publication of application with :
 
-###### Windows
-**`npm run dist:windows`**
-
-###### Linux
-**`npm run dist:linux`**
+**`npm run publish`**
 
 ## License
+
 MIT [TECH'advantage](mailto:contact@tech-advantage.com)

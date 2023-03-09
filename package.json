@@ -1,22 +1,21 @@
 {
   "name": "edc-help-viewer-desktop",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Viewer to navigate through the documentation exported by edc",
-  "main": "./main.js",
+  "main": ".webpack/main",
   "scripts": {
-    "postinstall": "electron-builder install-app-deps",
-    "dev": "nodemon --exec electron .",
-    "start": "electron .",
-    "test": "mocha --timeout 10000 src/test/viewer/** --exit",
-    "rome": "npx rome format ./ --write",
+    "start": "electron-forge start",
+    "dev": "concurrently \"tsc -w\" \"electron .\"",
+    "test": "mocha --parallel -r ts-node/register src/test/viewer/** --exit",
     "server": "node ./src/server.js",
-    "clean": "rimraf ./static/help",
-    "build": "npm run clean && webpack --config webpack/webpack.config.js",
-    "unzip-viewer": "run-func webpack/unzip_help_viewer.js unzipViewer",
-    "pack": "electron-builder --dir",
-    "dist:windows": "electron-builder --windows",
-    "dist:linux": "electron-builder --linux",
-    "build-win": "electron-packager ."
+    "clean": "rimraf ./static/help && rimraf ./dist",
+    "build": "npm run clean && webpack --config webpack/webpack.viewer-config.ts",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "make-mac": "electron-forge make --platform darwin",
+    "publish": "electron-forge publish",
+    "lint": "eslint . --ext .ts,.tsx",
+    "prepare": "husky install"
   },
   "repository": {
     "type": "git",
@@ -32,73 +31,95 @@
   },
   "homepage": "https://github.com/tech-advantage/edc-help-viewer-desktop#readme",
   "devDependencies": {
+    "@electron-forge/cli": "^6.0.5",
+    "@electron-forge/maker-deb": "^6.0.5",
+    "@electron-forge/maker-rpm": "^6.0.5",
+    "@electron-forge/maker-squirrel": "^6.0.5",
+    "@electron-forge/maker-zip": "^6.0.5",
+    "@electron-forge/plugin-webpack": "^6.0.5",
+    "@types/adm-zip": "^0.5.0",
+    "@types/body-parser": "^1.19.2",
+    "@types/chai": "^4.3.4",
+    "@types/cors": "^2.8.13",
+    "@types/electron": "^1.6.10",
+    "@types/express": "^4.17.17",
+    "@types/lunr": "^2.3.4",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "^18.13.0",
+    "@types/webpack": "^5.28.0",
+    "@types/webpack-dev-server": "^4.7.2",
+    "@typescript-eslint/eslint-plugin": "^4.32.0",
+    "@typescript-eslint/parser": "^4.32.0",
+    "@vercel/webpack-asset-relocator-loader": "1.7.3",
     "chai": "^4.3.7",
     "chai-http": "^4.3.0",
+    "concurrently": "^7.6.0",
     "copy-webpack-plugin": "^10.0.0",
-    "electron": "^15.3.1",
-    "electron-builder": "^22.14.5",
-    "electron-packager": "^15.4.0",
+    "css-loader": "^6.0.0",
+    "declaration-bundler-webpack-plugin": "^1.0.3",
+    "electron": "23.1.0",
+    "eslint": "^5.0.0",
+    "eslint-config-prettier": "^8.7.0",
+    "eslint-config-standard": "^17.0.0",
+    "eslint-plugin-import": "^2.25.0",
+    "eslint-plugin-prettier": "^4.2.1",
     "filemanager-webpack-plugin": "^6.1.7",
+    "fork-ts-checker-webpack-plugin": "^7.2.13",
+    "husky": "^8.0.3",
+    "jest": "^29.4.2",
     "mocha": "^10.1.0",
-    "pre-commit": "^1.2.2",
-    "rome": "^11.0.0",
+    "node-loader": "^2.0.0",
+    "node-polyfill-webpack-plugin": "^2.0.1",
+    "prettier": "^2.8.4",
+    "prettier-eslint": "^15.0.1",
+    "rimraf": "^3.0.2",
+    "run-func": "^1.0.5",
     "save-remote-file-webpack-plugin": "^1.1.0",
+    "style-loader": "^3.0.0",
+    "ts-loader": "^9.2.2",
+    "ts-node": "^10.0.0",
+    "typedi": "^0.10.0",
+    "typescript": "~4.5.4",
+    "webpack-cli": "^5.0.1",
+    "webpack-electron-reload": "^1.0.1",
     "webpack-merge": "^5.8.0",
     "webpack-nano": "^1.1.1",
+    "webpack-node-externals": "^3.0.0",
+    "webpack-shell-plugin": "^0.3.5",
     "webpack-shell-plugin-next": "^2.2.2"
   },
   "dependencies": {
-    "adm-zip": "^0.5.9",
+    "adm-zip": "^0.5.10",
     "assert": "^2.0.0",
+    "body-parser": "^1.20.1",
     "cors": "^2.8.5",
+    "electron": "^23.1.0",
+    "electron-forge-maker-nsis": "^24.0.0-alpha.13",
     "electron-log": "^4.4.1",
-    "electron-root-path": "^1.0.16",
+    "electron-root-path": "^1.1.0",
+    "electron-squirrel-startup": "^1.0.0",
     "express": "^4.17.3",
     "express-json-validator-middleware": "^2.2.1",
     "file-system-cache": "^2.0.1",
     "lunr": "^2.3.9",
-    "path-browserify": "^1.0.1",
-    "replace-in-file-webpack-plugin": "^1.0.6",
-    "rimraf": "^3.0.2",
-    "run-func": "^1.0.5",
-    "webpack": "^5.64.4",
-    "webpack-cli": "^4.9.1",
-    "webpack-shell-plugin": "^0.3.5"
+    "path": "^0.12.7",
+    "reflect-metadata": "^0.1.13"
   },
-  "build": {
-    "appId": "fr.techad.edc-help-viewer-desktop",
-    "productName": "EDC help viewer",
-    "win": {
-      "target": [
-        {
-          "target": "nsis",
-          "arch": [
-            "x64",
-            "ia32"
-          ]
-        }
-      ],
-      "icon": "static/assets/building/win32/favicon.ico"
-    },
-    "linux": {
-      "target": [
-        "AppImage",
-        "deb",
-        "snap",
-        "rpm"
-      ],
-      "category": "Utility"
-    },
-    "nsis": {
-      "installerIcon": "static/assets/building/win32/favicon.ico",
-      "uninstallerIcon": "static/assets/building/win32/favicon.ico",
-      "allowToChangeInstallationDirectory": true,
-      "oneClick": false,
-      "runAfterFinish": true
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint && npm test",
+      "pre-push": "npm run lint && npm test"
     }
   },
-  "pre-commit": [
-    "rome",
-    "test"
-  ]
+  "forge": {
+    "environments": {
+      "development": {
+        "PACKAGER_PORT": 3000,
+        "NODE_ENV": "development"
+      },
+      "production": {
+        "NODE_ENV": "production"
+      }
+    }
+  }
 }
