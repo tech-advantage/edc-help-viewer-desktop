@@ -3,12 +3,14 @@ import './menu';
 import { Logger } from './lib/logger';
 import { ConfigElectronViewer } from './utils/config-electron-viewer';
 import { PathResolver } from './utils/path-resolver';
+
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
+let mainWindow: BrowserWindow;
 
 const createWindow = (): void => {
   // Create main window
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: ConfigElectronViewer.getBrowserWindowWidthConfig(),
     height: ConfigElectronViewer.getBrowserWindowHeightConfig(),
     icon: PathResolver.getAppIcon(),
@@ -17,11 +19,12 @@ const createWindow = (): void => {
       contextIsolation: true,
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
     },
-    show: false,
+    show: process.argv[1] == "app" ? false : true,
   });
   mainWindow.webContents.reloadIgnoringCache();
   handleHeaders(mainWindow);
-
+  
+  
   mainWindow
     .loadURL(MAIN_WINDOW_WEBPACK_ENTRY)
     .then(() => {
@@ -35,8 +38,8 @@ const createWindow = (): void => {
         .catch((err) => Logger.log().error(err));
     })
     .catch((err) => Logger.log().error(err));
-
-  redirectFromPostRequest(mainWindow);
+    
+    redirectFromPostRequest(mainWindow);
 };
 
 const handleHeaders = (win: any) => {
@@ -75,14 +78,37 @@ const redirectFromPostRequest = (win: BrowserWindow) => {
         })
         .catch((err) => Logger.log().error(err));
     });
-  });
+ });
+};
+
+const shutDown = () => {
+  // Receive request from server
+  ipcMain.on('shutdown', (e, url) => {
+    if(url == true){
+      app.exit(0)
+      app.quit()
+    }
+ });
 };
 
 app.whenReady().then(() => {
   if (require('electron-squirrel-startup')) app.quit();
   // When the app is ready, run the mainWindow
   createWindow();
+  shutDown();
 
+  if(process.argv[1] == "app"){
+    mainWindow.on("close", async e => {
+      e.preventDefault()
+      mainWindow.hide();
+    })
+  } else {
+    mainWindow.on("close", async e => {
+      e.preventDefault()
+      mainWindow?.close();
+    })
+  }
+  
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });

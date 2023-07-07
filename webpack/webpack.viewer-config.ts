@@ -7,7 +7,7 @@ import WebpackShellPlugin from 'webpack-shell-plugin-next';
 import nodeExternals from 'webpack-node-externals';
 
 const config: webpack.Configuration = {
-  entry: APP_ROOT + '/webpack/webpack.config.ts',
+  entry: APP_ROOT + '/webpack/webpack.main.config.ts',
   mode: 'development',
   resolve: {
     extensions: ['.js', '.jsx', '.ts', '.tsx'],
@@ -32,7 +32,7 @@ const config: webpack.Configuration = {
     // Fetch the remote zip viewer
     new SaveRemoteFilePlugin([
       {
-        url: 'https://github.com/tech-advantage/edc-help-viewer/releases/download/v3.3.1/edc-help-viewer.3.3.1.zip',
+        url: 'https://github.com/tech-advantage/edc-help-viewer/releases/download/v3.3.2/edc-help-viewer.3.3.2.zip',
         filepath: 'zip/edc-help-viewer.zip',
       },
     ]),
