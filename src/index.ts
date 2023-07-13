@@ -23,8 +23,7 @@ const createWindow = (): void => {
   });
   mainWindow.webContents.reloadIgnoringCache();
   handleHeaders(mainWindow);
-  
-  
+
   mainWindow
     .loadURL(MAIN_WINDOW_WEBPACK_ENTRY)
     .then(() => {
@@ -38,7 +37,7 @@ const createWindow = (): void => {
         .catch((err) => Logger.log().error(err));
     })
     .catch((err) => Logger.log().error(err));
-    
+
     redirectFromPostRequest(mainWindow);
 };
 
