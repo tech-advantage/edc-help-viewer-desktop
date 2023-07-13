@@ -40,4 +40,24 @@ viewerRouter.post('/helpviewer', validate({ body: UrlUtils.urlSchema() }), (req:
   );
 });
 
+viewerRouter.post('/helpviewer/shutdown', (req: Request, res: Response) => {
+  const shutDown: boolean = req.body.shutDown;
+
+  res.setHeader('Content-Type', 'application/json');
+
+  if (res.statusCode == 500) {
+    Logger.log().error(req, res);
+    res.send('Internal Server Error');
+  } else if (res.statusCode == 404) {
+    message = 'Unable to find the requested resource ! You can try another URL.';
+    res.status(404).json({ message });
+  }
+
+  ipcRenderer.send('shutdown', shutDown);
+
+  res.send(
+    `Application is shutdown`
+  );
+})
+
 export default viewerRouter;

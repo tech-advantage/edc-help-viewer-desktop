@@ -112,6 +112,9 @@ export class ConfigElectronViewer {
    * @returns {number} browserWindow width
    */
   static getBrowserWindowWidthConfig(): number {
+    if(parseInt(process.argv[2]) !== configViewer.browserWindow.width){
+      return parseInt(process.argv[2]);
+    }
     return configViewer.browserWindow.width;
   }
 
@@ -121,6 +124,9 @@ export class ConfigElectronViewer {
    * @returns {number} browserWindow height
    */
   static getBrowserWindowHeightConfig(): number {
+    if(parseInt(process.argv[3]) !== configViewer.browserWindow.height){
+      return parseInt(process.argv[3]);
+    }
     return configViewer.browserWindow.height;
   }
 }
